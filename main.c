@@ -67,25 +67,42 @@ int main(int argc, char **argv){
     bool move_down = false;
     
     bool main_menu = true;
+    bool game_over = false;
     
     while(running){
         // Process events
-        while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT){
-                running = false;
-            }
-            
-            if(main_menu == true){
-                SDL_Color textColor = { 255, 255, 255 };
-                SDL_RenderClear(renderer);
-                SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to start!", textColor);
-                SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
-                SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
-                SDL_RenderPresent(renderer);
-                if(event.type == SDLK_SPACE){
+        if(event.type == SDL_QUIT){
+            running = false;
+        }
+        if(main_menu == true){
+            SDL_Color textColor = { 255, 255, 255 };
+            SDL_RenderClear(renderer);
+            SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to start!", textColor);
+            SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
+            SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
+            SDL_RenderPresent(renderer);
+
+            while(SDL_PollEvent(&event)){
+                if(event.key.keysym.sym == SDLK_SPACE){
                     main_menu = false;
                 }
+            }
+        }else{
+            if(game_over){
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_RenderClear(renderer);
+                SDL_RenderPresent(renderer);
+                move_left = false;
+                move_right = false;
+                move_up = false;
+                move_down = false;
+                while(SDL_PollEvent(&event)){
+                    if(event.key.keysym.sym == SDLK_SPACE){
+                        game_over = false;
+                    }
+                }
             }else{
+            while(SDL_PollEvent(&event)){
             
                 if(event.type == SDL_KEYUP){
                     if(event.key.keysym.sym == SDLK_RIGHT){
@@ -133,11 +150,13 @@ int main(int argc, char **argv){
             int wallWidth = 200;
 
             if(x < wallWidth || x > width - wallWidth - 50){
+                game_over = true;
                 x = 375;
                 y = 250;
             }
             
             if(y > 550 || y < 0){
+                game_over = true;
                 x = 375;
                 y = 250;
             }
@@ -161,7 +180,7 @@ int main(int argc, char **argv){
             SDL_Rect rect = {x, y, 50, 50};
             SDL_RenderFillRect(renderer, &rect);
             
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Yellow color
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color
             SDL_Rect object1 = {location += .25, count -= 0.25, 50, 50};
             SDL_RenderFillRect(renderer, &object1);
             
@@ -189,9 +208,11 @@ int main(int argc, char **argv){
             SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
             // Show what was drawn
             SDL_RenderPresent(renderer);
+            }
+            
         }
             //score++;
-        }
+    }
     
     // Release resources
     TTF_CloseFont( font );
