@@ -59,6 +59,12 @@ int main(int argc, char **argv){
     MainMenu_rect.w = 300;
     MainMenu_rect.h = 50;
     
+    SDL_Rect GameOver_Rect;
+    GameOver_Rect.x = 200;
+    GameOver_Rect.y = 50;
+    GameOver_Rect.w = 300;
+    GameOver_Rect.h = 50;
+    
     SDL_Event event;
     
     bool move_left = false;
@@ -68,6 +74,7 @@ int main(int argc, char **argv){
     
     bool main_menu = true;
     bool game_over = false;
+    bool beencleared = false;
     
     while(running){
         // Process events
@@ -89,129 +96,143 @@ int main(int argc, char **argv){
             }
         }else{
             if(game_over){
+                score = 0;
+                if(!beencleared){
+                    SDL_RenderClear(renderer);
+                    beencleared = true;
+                }
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-                SDL_RenderClear(renderer);
-                SDL_RenderPresent(renderer);
+                
                 move_left = false;
                 move_right = false;
                 move_up = false;
                 move_down = false;
+                
+                SDL_Color textColor = { 255, 255, 255 };
+                
+                SDL_RenderClear(renderer);
+                
+                SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to start!", textColor);
+                SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
+                
+                SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
+                SDL_RenderPresent(renderer);
+                
                 while(SDL_PollEvent(&event)){
                     if(event.key.keysym.sym == SDLK_SPACE){
                         game_over = false;
                     }
                 }
+                beencleared = false;
+                
             }else{
-            while(SDL_PollEvent(&event)){
+                while(SDL_PollEvent(&event)){
             
-                if(event.type == SDL_KEYUP){
-                    if(event.key.keysym.sym == SDLK_RIGHT){
-                        move_right = false;
+                    if(event.type == SDL_KEYUP){
+                        if(event.key.keysym.sym == SDLK_RIGHT){
+                            move_right = false;
+                        }
+                        if(event.key.keysym.sym == SDLK_LEFT){
+                            move_left = false;
+                        }
+                        if(event.key.keysym.sym == SDLK_DOWN){
+                            move_down = false;
+                        }
+                        if(event.key.keysym.sym == SDLK_UP){
+                            move_up = false;
+                        }
                     }
-                    if(event.key.keysym.sym == SDLK_LEFT){
-                        move_left = false;
-                    }
-                    if(event.key.keysym.sym == SDLK_DOWN){
-                        move_down = false;
-                    }
-                    if(event.key.keysym.sym == SDLK_UP){
-                        move_up = false;
+                    if(event.type == SDL_KEYDOWN){
+                        if(event.key.keysym.sym == SDLK_RIGHT){
+                            move_right = true;
+                        }
+                        if(event.key.keysym.sym == SDLK_LEFT){
+                            move_left = true;
+                        }
+                        if(event.key.keysym.sym == SDLK_DOWN){
+                            move_down = true;
+                        }
+                        if(event.key.keysym.sym == SDLK_UP){
+                            move_up = true;
+                        }
                     }
                 }
-                if(event.type == SDL_KEYDOWN){
-                    if(event.key.keysym.sym == SDLK_RIGHT){
-                        move_right = true;
-                    }
-                    if(event.key.keysym.sym == SDLK_LEFT){
-                        move_left = true;
-                    }
-                    if(event.key.keysym.sym == SDLK_DOWN){
-                        move_down = true;
-                    }
-                    if(event.key.keysym.sym == SDLK_UP){
-                        move_up = true;
-                    }
+                if(move_left){
+                    x -= 1;
                 }
-            }
-            if(move_left){
-                x -= 1;
-            }
-            if(move_right){
-                x += 1;
-            }
-            if(move_up){
-                y -= 1;
-            }
-            if(move_down){
-                y += 1;
-            }
+                if(move_right){
+                    x += 1;
+                }
+                if(move_up){
+                    y -= 1;
+                }
+                if(move_down){
+                    y += 1;
+                }
             
             
-            int wallWidth = 200;
+                int wallWidth = 200;
 
-            if(x < wallWidth || x > width - wallWidth - 50){
-                game_over = true;
-                x = 375;
-                y = 250;
-            }
+                if(x < wallWidth || x > width - wallWidth - 50){
+                    game_over = true;
+                    x = 375;
+                    y = 250;
+                }
             
-            if(y > 550 || y < 0){
-                game_over = true;
-                x = 375;
-                y = 250;
-            }
+                if(y > 550 || y < 0){
+                    game_over = true;
+                    x = 375;
+                    y = 250;
+                }
             
-            // Clear screen with black
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
+                // Clear screen with black
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_RenderClear(renderer);
             
-            // Draw
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
+                // Draw
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
             
-            SDL_Rect wall1 = {0, 0, 200, 600};
-            SDL_RenderFillRect(renderer, &wall1);
+                SDL_Rect wall1 = {0, 0, 200, 600};
+                SDL_RenderFillRect(renderer, &wall1);
+                
+                SDL_Rect wall2 = {800, 0, 200, 600};
+                SDL_RenderFillRect(renderer, &wall2);
+                
+                SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Yellow color
             
-            SDL_Rect wall2 = {800, 0, 200, 600};
-            SDL_RenderFillRect(renderer, &wall2);
+                // Draw a rectangle
+                SDL_Rect rect = {x, y, 50, 50};
+                SDL_RenderFillRect(renderer, &rect);
+                
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color
+                SDL_Rect object1 = {location += .25, count -= 0.25, 50, 50};
+                SDL_RenderFillRect(renderer, &object1);
             
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Yellow color
-            
-            // Draw a rectangle
-            SDL_Rect rect = {x, y, 50, 50};
-            SDL_RenderFillRect(renderer, &rect);
-            
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color
-            SDL_Rect object1 = {location += .25, count -= 0.25, 50, 50};
-            SDL_RenderFillRect(renderer, &object1);
-            
-            if(count == -50){
-                count = 600;
-            }
-            if(location > 550){
-                location = 200;
-            }
-            
-            char array[64];
-            sprintf(array, "%d", score);
-            score++;
-            //printf("%s\n", array);
-            
-            SDL_Color textColor = { 255, 255, 255 };
-            
-            SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, array, textColor);
-            SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(font, "Score: ", textColor);
-            
-            SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-            SDL_Texture* Message2 = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
-            
-            SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-            SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
-            // Show what was drawn
-            SDL_RenderPresent(renderer);
+                if(location > 550){
+                    location = 200;
+                }
+                
+                char array[64];
+                sprintf(array, "%d", score);
+                score++;
+                //printf("%s\n", array);
+                
+                SDL_Color textColor = { 255, 255, 255 };
+                
+                SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, array, textColor);
+                SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(font, "Score: ", textColor);
+                
+                SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+                SDL_Texture* Message2 = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
+                
+                SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+                SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
+                // Show what was drawn
+                SDL_RenderPresent(renderer);
             }
             
         }
-            //score++;
+                //score++;
     }
     
     // Release resources
