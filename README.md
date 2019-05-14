@@ -7,4 +7,4 @@ We are creating a game called 'Fall Game' (name to be changed) programmed in C, 
 
 This is where we will need to add instructions for andrew to compile and run our program, including how to set up the libary file.
 
-e.g. to compile use gcc...
+e.g. to compile use gcc... (might need a make file actually)
