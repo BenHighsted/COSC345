@@ -5,9 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-//#include "SDL_image.h"
 #include <SDL2/SDL_image.h>
-//#include "SDL2_image/SDL_image.h"
 
 #include "SDL2_ttf/SDL_ttf.h"
 #include <SDL2/SDL.h>
@@ -52,6 +50,17 @@ int main(int argc, char **argv){
         printf("Failed to find font");
         return false;
     }
+    
+    
+    
+    Uint32 startTime = 0;
+    Uint32 endTime = 0;
+    Uint32 delta = 0;
+    short fps = 60;
+    short timePerFrame = 16; // miliseconds
+    
+    
+    
     
     SDL_Rect wall_rect;
     wall_rect.x = 0;
@@ -130,6 +139,9 @@ int main(int argc, char **argv){
     
     SDL_Surface *background = IMG_Load("bricksBackground.png");
     SDL_Texture *backTexture = SDL_CreateTextureFromSurface(renderer, background);
+    
+    SDL_Surface *yoshi = IMG_Load("yoshi.jpg");
+    SDL_Texture *yoshiTexture = SDL_CreateTextureFromSurface(renderer, yoshi);
     
     while(running){
         // Process events
@@ -232,10 +244,48 @@ int main(int argc, char **argv){
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                 SDL_RenderClear(renderer);
                 
-                counter += 5;
-                counter2 += 5;
-                counter3 += 5;
-                counter4 += 5;
+                int WallState = rand() % 4;//equals either 0, 1, 2 or 3.
+                
+                
+                    if (!startTime) {
+                        // get the time in ms passed from the moment the program started
+                        startTime = SDL_GetTicks();
+                    } else {
+                        delta = endTime - startTime; // how many ms for a frame
+                    }
+                    
+                    
+                    // if less than 16ms, delay
+                    if (delta < timePerFrame) {
+                        SDL_Delay(1);
+                    }
+                    
+                    // if delta is bigger than 16ms between frames, get the actual fps
+                    if (delta > timePerFrame) {
+                        fps = 1000 / delta;
+                    }
+                    
+                    printf("FPS is: %i \n", fps);
+                    
+                    startTime = endTime;
+                    endTime = SDL_GetTicks();
+                
+                
+                
+                
+                
+                
+                /** TO GO HERE IS SOME CODE BASED ON THE ABOVE RAND WHAT WALL STATE IT SHOULD BE IN
+                 E.G. wallstate 0 is on the left, and 3 is on the right */
+                int counterAdd = 5;
+                
+                counter += counterAdd;
+                counter2 += counterAdd;
+                counter3 += counterAdd;
+                counter4 += counterAdd;
+                if(score == 10000 || score == 20000 || score == 30000 || score == 40000 || score == 50000){//speeds up falling pace
+                    counterAdd += 2;
+                }
                 
                 int wallWidth = 200;
 
@@ -251,7 +301,7 @@ int main(int argc, char **argv){
                     y = 250;
                 }
                 
-                if(counter == 100){
+                if(counter >= 100){
                     background_rect.y -= 2;
                     counter = 0;
                 }
@@ -261,7 +311,7 @@ int main(int argc, char **argv){
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect);
                 
-                if(counter2 == 100){
+                if(counter2 >= 100){
                     counter2 = 0;
                     background_rect2.y -= 2;
                 }
@@ -281,6 +331,8 @@ int main(int argc, char **argv){
                 // Draw a rectangle
                 SDL_Rect rect = {x, y, 50, 50};
                 SDL_RenderFillRect(renderer, &rect);
+                
+                SDL_RenderCopy(renderer, yoshiTexture, NULL, &rect);
             
                 if(location > 550){
                     location = 200;
@@ -356,10 +408,4 @@ int main(int argc, char **argv){
     SDL_Quit();
     
     return 0;
-}
-
-int randValue(int range){
-    /* random int between 0 and range */
-    int r = rand() % range;
-    return r;
 }
