@@ -196,26 +196,7 @@ int main(int argc, char **argv){
             SDL_Color textColor = {255, 255, 255};
             SDL_RenderClear(renderer);
             
-            /*if(backCounter >= 100){
-               Title_background_rect.y -= 2;
-                backCounter = 0;
-            }
-            if(Title_background_rect.y <= -600){
-                Title_background_rect.y = 600;
-            }
-            if(backCounter2 >= 100){
-                backCounter2 = 0;
-                Title_background_rect2.y -= 2;
-            }
-            if(Title_background_rect2.y <= -600){
-                Title_background_rect2.y = 600;
-            }*/
-            
             SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);
-            
-            /**
-             MAKE A BLACK SCREEN SHOWING ATTEMPT AND SCORE AFTER PRESSING SPACE?????
-             */
             
             SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
             SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
@@ -265,6 +246,7 @@ int main(int argc, char **argv){
         }else{
             if(game_over){
                 attempts++;
+                
                 /**
                  *
                  * Need to add some sort of score function; couldnt be bothered writing text to screen when writing this
@@ -315,17 +297,6 @@ int main(int argc, char **argv){
                     }
                 }
                 beencleared = false;
-                
-            }else if(start_menu){
-                SDL_RenderClear(renderer);
-                SDL_Color textColor = {255, 255, 255};
-                sprintf(array2, "Attempt Number: %d", score);
-                //Personal Best, Amount of Attempts, maybe high scores..? or highest score? dunno.
-                SDL_Surface* startMessage = TTF_RenderText_Solid(font, array2, textColor);
-                SDL_Texture* startMessage2 = SDL_CreateTextureFromSurface(renderer, startMessage);
-                SDL_RenderCopy(renderer, startMessage2, NULL, &Start_rect);
-                SDL_Delay(3000);
-                start_menu = false;
                 
             }else{
                 while(SDL_PollEvent(&event)){
