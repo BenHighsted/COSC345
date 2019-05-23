@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     SDL_Init(SDL_INIT_VIDEO);
     
     // Create a SDL window
-    SDL_Window *window = SDL_CreateWindow("Hello, SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+    SDL_Window *window = SDL_CreateWindow("Dungeon Fall", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     
     // Create a renderer (accelerated and in sync with the display refresh rate)
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -33,6 +33,7 @@ int main(int argc, char **argv){
     float counter2 = 0.0;
     float counter3 = 0.0;
     float counter4 = 0.0;
+    int attempts = 0;
     
     TTF_Init();
     IMG_Init(IMG_INIT_JPG);
@@ -51,16 +52,11 @@ int main(int argc, char **argv){
         return false;
     }
     
-    
-    
     Uint32 startTime = 0;
     Uint32 endTime = 0;
     Uint32 delta = 0;
     short fps = 60;
     short timePerFrame = 16; // miliseconds
-    
-    
-    
     
     SDL_Rect wall_rect;
     wall_rect.x = 0;
@@ -96,17 +92,26 @@ int main(int argc, char **argv){
     Message_rect2.w = 50; // controls the width of the rect
     Message_rect2.h = 30;
     
-    SDL_Rect MainMenu_rect; //Main Menu Text Box
+    /*SDL_Rect MainMenu_rect; //Main Menu Text Box
     MainMenu_rect.x = 300;
     MainMenu_rect.y = 400;
     MainMenu_rect.w = 400;
-    MainMenu_rect.h = 50;
+    MainMenu_rect.h = 50;*/
     
     SDL_Rect Title_rect; //Main Menu Title Text Box
     Title_rect.x = 150;
     Title_rect.y = 50;
-    Title_rect.w = 800;
+    Title_rect.w = 700;
     Title_rect.h = 300;
+    
+    SDL_Rect Title_background_rect;
+    Title_background_rect.x = 0;
+    Title_background_rect.y = 0;
+    Title_background_rect.w = 1000;
+    Title_background_rect.h = 600;
+    
+    SDL_Rect Title_background_rect2 = Title_background_rect;
+    Title_background_rect2.y = 600;
     
     SDL_Rect GameOver_Rect; //Game over text box
     GameOver_Rect.x = 200;
@@ -123,6 +128,12 @@ int main(int argc, char **argv){
     SDL_Rect background_rect2 = background_rect;
     background_rect.y = 600;
     
+    SDL_Rect Start_rect; //Start Menu Title Text Box
+    Title_rect.x = 150;
+    Title_rect.y = 50;
+    Title_rect.w = 700;
+    Title_rect.h = 300;
+    
     SDL_Event event;
     
     bool move_left = false;
@@ -133,6 +144,9 @@ int main(int argc, char **argv){
     bool main_menu = true;
     bool game_over = false;
     bool beencleared = false;
+    bool rightmove = false;
+    
+    int counterAdd = 5;
     
     SDL_Surface *image = IMG_Load("bricks.png");
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
@@ -140,8 +154,20 @@ int main(int argc, char **argv){
     SDL_Surface *background = IMG_Load("bricksBackground.png");
     SDL_Texture *backTexture = SDL_CreateTextureFromSurface(renderer, background);
     
-    SDL_Surface *yoshi = IMG_Load("yoshi.jpg");
+    SDL_Surface *yoshi = IMG_Load("fatyoshi.png");
     SDL_Texture *yoshiTexture = SDL_CreateTextureFromSurface(renderer, yoshi);
+    
+    char *array = (char *) malloc(64);
+    char *array2 = (char *) malloc(64);
+    SDL_Surface* surfaceMessage;
+    SDL_Surface* surfaceMessage2;
+    
+    SDL_Texture* Message;
+    SDL_Texture* Message2;
+
+    int startx = 300, starty = 400, fallx = 300, fally = -50;
+    float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0;
+    bool add = true, fall = false, start_menu = false;
     
     while(running){
         // Process events
@@ -149,30 +175,120 @@ int main(int argc, char **argv){
             running = false;
         }
         if(main_menu == true){
+            menuCounter += 2;
+            fallCounter += 0.5;
+            backCounter += 6;
+            backCounter2 += 6;
+            
+            if(fallCounter == 500){
+                fall = true;
+                fallCounter = 0;
+            }
+            
+            if(starty == 400){
+                add = false;
+            }else if(starty == 380){
+                add = true;
+            }
+            
+            SDL_Rect falling_rect = {fallx, fally, 50, 50};
+            
             SDL_Color textColor = {255, 255, 255};
             SDL_RenderClear(renderer);
-            SDL_Surface* titleMessage = TTF_RenderText_Solid(font, "TITLE TO BE ENTERED", textColor);
+            
+            /*if(backCounter >= 100){
+               Title_background_rect.y -= 2;
+                backCounter = 0;
+            }
+            if(Title_background_rect.y <= -600){
+                Title_background_rect.y = 600;
+            }
+            if(backCounter2 >= 100){
+                backCounter2 = 0;
+                Title_background_rect2.y -= 2;
+            }
+            if(Title_background_rect2.y <= -600){
+                Title_background_rect2.y = 600;
+            }*/
+            
+            SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);
+            
+            /**
+             MAKE A BLACK SCREEN SHOWING ATTEMPT AND SCORE AFTER PRESSING SPACE?????
+             */
+            
+            SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
+            SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
+            SDL_RenderCopy(renderer, yoshiTexture, NULL, &falling_rect);//copied here to appear behind text
+            
+            SDL_Surface* titleMessage = TTF_RenderText_Solid(font, "DUNGEON FALL", textColor);
             SDL_Texture* titleMessage2 = SDL_CreateTextureFromSurface(renderer, titleMessage);
             SDL_RenderCopy(renderer, titleMessage2, NULL, &Title_rect);
+            
+            SDL_Rect MainMenu_rect = {startx, starty, 400, 50};
+            
+            if(add){
+                if(menuCounter == 30){
+                    starty++;
+                    menuCounter = 0;
+                }
+            }else{
+                if(menuCounter == 30){
+                    starty--;
+                    menuCounter = 0;
+                }
+            }
+            
+            if(fall){
+                fally++;
+            }
+            
             SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to start!", textColor);
             SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
+            
             SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
-            SDL_RenderPresent(renderer);
-
+            
+            SDL_RenderPresent(renderer);//present the title page
+            
+            
+            SDL_DestroyTexture(titleMessage2);//free resources
+            SDL_DestroyTexture(mainMessage2);
+            SDL_FreeSurface(titleMessage);
+            SDL_FreeSurface(mainMessage);
+            
             while(SDL_PollEvent(&event)){
                 if(event.key.keysym.sym == SDLK_SPACE){
                     main_menu = false;
+                    start_menu = true;
                 }
             }
         }else{
             if(game_over){
-                //SDL_Delay(2000);
+                attempts++;
+                /**
+                 *
+                 * Need to add some sort of score function; couldnt be bothered writing text to screen when writing this
+                 * When you click to start, show current best score (int current session)
+                 * Make a way to get back to main menu when you lose?
+                 * Add something to the menu that shows high scores? (Could write to a file eventually but for now just show our best scores?
+                 *
+                 *
+                 * STILL NEED TO GET VALGRIND GOING TO CHECK OUR CODE BEFORE SUBMITTING!! ANDREW WILL PROBS CHECK.
+                 *
+                 */
+                
+                SDL_Rect MainMenu_rect; //Main Menu Text Box
+                MainMenu_rect.x = 300;
+                MainMenu_rect.y = 400;
+                MainMenu_rect.w = 400;
+                MainMenu_rect.h = 50;
+                
                 score = 0;
                 if(!beencleared){
                     SDL_RenderClear(renderer);
                     beencleared = true;
                 }
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
                 
                 move_left = false;
                 move_right = false;
@@ -189,12 +305,27 @@ int main(int argc, char **argv){
                 SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
                 SDL_RenderPresent(renderer);
                 
+                SDL_FreeSurface(mainMessage);
+                SDL_DestroyTexture(mainMessage2);
+                
                 while(SDL_PollEvent(&event)){
                     if(event.key.keysym.sym == SDLK_SPACE){
                         game_over = false;
+                        start_menu = true;
                     }
                 }
                 beencleared = false;
+                
+            }else if(start_menu){
+                SDL_RenderClear(renderer);
+                SDL_Color textColor = {255, 255, 255};
+                sprintf(array2, "Attempt Number: %d", score);
+                //Personal Best, Amount of Attempts, maybe high scores..? or highest score? dunno.
+                SDL_Surface* startMessage = TTF_RenderText_Solid(font, array2, textColor);
+                SDL_Texture* startMessage2 = SDL_CreateTextureFromSurface(renderer, startMessage);
+                SDL_RenderCopy(renderer, startMessage2, NULL, &Start_rect);
+                SDL_Delay(3000);
+                start_menu = false;
                 
             }else{
                 while(SDL_PollEvent(&event)){
@@ -216,9 +347,11 @@ int main(int argc, char **argv){
                     if(event.type == SDL_KEYDOWN){
                         if(event.key.keysym.sym == SDLK_RIGHT){
                             move_right = true;
+                            rightmove = true;
                         }
                         if(event.key.keysym.sym == SDLK_LEFT){
                             move_left = true;
+                            rightmove = false;
                         }
                         if(event.key.keysym.sym == SDLK_DOWN){
                             move_down = true;
@@ -241,10 +374,10 @@ int main(int argc, char **argv){
                     y += 1;
                 }
                 
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
                 SDL_RenderClear(renderer);
                 
-                int WallState = rand() % 4;//equals either 0, 1, 2 or 3.
+                //int WallState = rand() % 4;//equals either 0, 1, 2 or 3.
                 
                 
                     if (!startTime) {
@@ -257,7 +390,7 @@ int main(int argc, char **argv){
                     
                     // if less than 16ms, delay
                     if (delta < timePerFrame) {
-                        SDL_Delay(1);
+                       // SDL_Delay(1);
                     }
                     
                     // if delta is bigger than 16ms between frames, get the actual fps
@@ -277,13 +410,13 @@ int main(int argc, char **argv){
                 
                 /** TO GO HERE IS SOME CODE BASED ON THE ABOVE RAND WHAT WALL STATE IT SHOULD BE IN
                  E.G. wallstate 0 is on the left, and 3 is on the right */
-                int counterAdd = 5;
+                //counterAdd = 5;
                 
                 counter += counterAdd;
                 counter2 += counterAdd;
                 counter3 += counterAdd;
                 counter4 += counterAdd;
-                if(score == 10000 || score == 20000 || score == 30000 || score == 40000 || score == 50000){//speeds up falling pace
+                if(score == 5000 || score == 10000 || score == 20000 || score == 30000 || score == 40000 || score == 50000){//speeds up falling pace
                     counterAdd += 2;
                 }
                 
@@ -324,34 +457,51 @@ int main(int argc, char **argv){
                 // Clear screen with black
 
                 // Draw
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
+                //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0); // White color
                 
-                SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Yellow color
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0); // Yellow color
             
+                
                 // Draw a rectangle
                 SDL_Rect rect = {x, y, 50, 50};
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
                 SDL_RenderFillRect(renderer, &rect);
                 
-                SDL_RenderCopy(renderer, yoshiTexture, NULL, &rect);
+                //SDL_Rect rect = {0, 0, 32, 32}; // the rect is where you wants the texture to be drawn (screen coordinate).
+                
+                if(rightmove){
+                float angle = 0.0; // set the angle.
+                SDL_Point center = {8, 8}; // the center where the texture will be rotated.
+                SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL; // the flip of the texture.
+                
+                flip = SDL_FLIP_HORIZONTAL;
+                
+                // now, try to draw something
+                SDL_RenderCopyEx(renderer, yoshiTexture, NULL , &rect, angle, &center, flip);
+                }else{
+                    SDL_RenderCopy(renderer, yoshiTexture, NULL, &rect);
+                }
+                
+
             
                 if(location > 550){
                     location = 200;
                 }
-                
-                char array[64];
-                sprintf(array, "%d", score);
+
                 score++;
+                sprintf(array, "%d", score);
 
                 SDL_Color textColor = { 255, 255, 255 };
                 
-                SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font2, array, textColor);
-                SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(font, "Score: ", textColor);
-                
-                SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-                SDL_Texture* Message2 = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
+                surfaceMessage = TTF_RenderText_Solid(font2, array, textColor);
+                surfaceMessage2 = TTF_RenderText_Solid(font, "Score: ", textColor);
+             
+                Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+                Message2 = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
                 
                 SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
                 SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
+                
                 // Show what was drawn
                 if(counter3 > 50){
                     wall_rect.y -= 4;
@@ -390,9 +540,15 @@ int main(int argc, char **argv){
                 //SDL_RenderCopy(renderer, texture, NULL, &Image_rect);
                 
                 SDL_RenderPresent(renderer);
+                SDL_DestroyTexture(Message);
+                SDL_DestroyTexture(Message2);
+                SDL_FreeSurface(surfaceMessage);
+                SDL_FreeSurface(surfaceMessage2);
             }
         }
     }
+    
+    free(array);
     
     // Release resources
     TTF_CloseFont( font );
