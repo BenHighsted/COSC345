@@ -37,12 +37,13 @@ int main(int argc, char **argv){
 
     int startx = 300, starty = 400, fallx = 300, fally = -50;
     float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0;
-    bool add = true, fall = false, first_loop = false, game_over_loop = false;
+    bool add = true, fall = false, first_loop = false;
     
     bool move_left = false, move_right = false, move_up = false, move_down = false;
     bool main_menu = true, game_over = false, rightmove = false;
     
     char *array = (char *) malloc(64);
+    char *array2 = (char *) malloc(64);
     
     TTF_Init();
     IMG_Init(IMG_INIT_JPG);
@@ -172,10 +173,12 @@ int main(int argc, char **argv){
         }else{
             if(game_over == true){
                 counterAdd = 5;
-                //attempts++;
                 
                 SDL_Color textColor = {255, 255, 255};
                 SDL_Rect game_over_back2 = {0, 0, 1000, 600};
+                SDL_Rect GameOver_rect = {230, 50, 500, 100};
+                SDL_Rect Attempts_rect = {380, 150, 200, 50};
+                SDL_Rect Attempts_rect2 = {585, 150, 20, 45 };
 
                 score = 0;
                 
@@ -188,12 +191,24 @@ int main(int argc, char **argv){
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
                 
+                SDL_Surface* gameOverSurface = TTF_RenderText_Solid(font, "Game Over!", textColor);
+                SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
+                
                 SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to try again!", textColor);
                 SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
                 
                 SDL_Surface* mainMessage3 = TTF_RenderText_Solid(font, "Press 'M' to return to the menu!", textColor);
                 SDL_Texture* mainMessage4 = SDL_CreateTextureFromSurface(renderer, mainMessage3);
                 
+                SDL_Surface* attemptMessage = TTF_RenderText_Solid(font, "Attempt number: ", textColor);
+                SDL_Texture* attemptMessage2 = SDL_CreateTextureFromSurface(renderer, attemptMessage);
+                
+                SDL_Surface* attemptCount = TTF_RenderText_Solid(font, array2, textColor);
+                SDL_Texture* attemptCount2 = SDL_CreateTextureFromSurface(renderer, attemptCount);
+                
+                SDL_RenderCopy(renderer, gameOverTexture, NULL, &GameOver_rect);
+                SDL_RenderCopy(renderer, attemptMessage2, NULL, &Attempts_rect);
+                SDL_RenderCopy(renderer, attemptCount2, NULL, &Attempts_rect2);
                 SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
                 SDL_RenderCopy(renderer, mainMessage4, NULL, &MainMenu_rect2);
                 
@@ -207,8 +222,7 @@ int main(int argc, char **argv){
                 while(SDL_PollEvent(&event)){
                     if(event.key.keysym.sym == SDLK_SPACE){
                         game_over = false;
-                        //first_loop = true;
-                        game_over_loop = true;
+                        first_loop = true;
                     }
                     if(event.key.keysym.sym == SDLK_m){
                         game_over = false;
@@ -231,11 +245,11 @@ int main(int argc, char **argv){
             
             while(first_loop){
                 SDL_RenderClear(renderer);
-                count += 0.5;
-                counter3 += 5;
-                counter4 += 5;
-                counter2+= 5;
-                counter+= 5;
+                count += 1;
+                counter3 += 10;
+                counter4 += 10;
+                counter2+= 10;
+                counter+= 10;
                     
                 SDL_Color textColor = {255, 255, 255};
                     
@@ -315,6 +329,7 @@ int main(int argc, char **argv){
                 SDL_FreeSurface(titleMessage);
                     
             }
+                
             while(SDL_PollEvent(&event)){
             
                 if(event.type == SDL_KEYUP){
@@ -476,6 +491,11 @@ int main(int argc, char **argv){
             }
             
             SDL_RenderCopy(renderer, texture, NULL, &wall_rect2_2);
+                
+                if(game_over){
+                    attempts++;
+                    sprintf(array2, "%d", attempts);
+                }
                 
                 //SDL_RenderCopy(renderer, texture, NULL, &Image_rect);
             SDL_RenderPresent(renderer);
