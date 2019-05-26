@@ -27,8 +27,8 @@ int main(int argc, char **argv){
     SDL_Window *window = SDL_CreateWindow("Dungeon Fall", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     
     // Create a renderer (accelerated and in sync with the display refresh rate)
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    
     int x = 475, y = 250;;
     float location = 375;
     bool running = true;
@@ -59,7 +59,7 @@ int main(int argc, char **argv){
         return false;
     }
     
-    SDL_Rect wall_rect = {0, 0, 200, 600};
+    SDL_Rect wall_rect = {-800, 0, 1000, 600};
     SDL_Rect wall_rect2 = wall_rect;
     wall_rect2.x = 800;
     SDL_Rect wall_rect1_2 = wall_rect;
@@ -91,6 +91,43 @@ int main(int argc, char **argv){
     SDL_Surface* surfaceMessage2;
     SDL_Texture* Message;
     SDL_Texture* Message2;
+    
+    
+    //MATTS MERGE CODE
+    int wallLeftX = -800;
+    int wallRightX = 800;
+    
+    int phases = 0;
+    
+    bool setup = true;
+    
+    float oby = 810;
+    float speed = 0.5;
+    
+    float ob2y = 1110;
+    
+    float obx = (rand() % 520)+200;
+    float ob2x = (rand() % 550)+200;
+    float ob3x = (rand() % 500)+200;
+    
+    float ob4x = (rand() % 520)+200;
+    float ob5x = (rand() % 550)+200;
+    float ob6x = (rand() % 500)+200;
+    
+    bool complete;
+    
+    float wallPos1 = 100, wallPos2 = 300, wallPos3 = 500, wallPos4 = 700;
+    int pos;
+    
+    int mode = 0;
+    
+    bool switchModes = false;
+    
+    int points = 0;
+    int counted1 = 0;
+    int counted2 = 0;
+    
+    float wallCount = 0.0;
     
     while(running){
         // Process events
@@ -214,11 +251,17 @@ int main(int argc, char **argv){
                 
                 SDL_RenderPresent(renderer);
                 
+                SDL_FreeSurface(gameOverSurface);
+                SDL_DestroyTexture(gameOverTexture);
                 SDL_FreeSurface(mainMessage);
                 SDL_DestroyTexture(mainMessage2);
-                
                 SDL_FreeSurface(mainMessage3);
                 SDL_DestroyTexture(mainMessage4);
+                SDL_FreeSurface(attemptMessage);
+                SDL_DestroyTexture(attemptMessage2);
+                SDL_FreeSurface(attemptCount);
+                SDL_DestroyTexture(attemptCount2);
+                
                 while(SDL_PollEvent(&event)){
                     if(event.key.keysym.sym == SDLK_SPACE){
                         game_over = false;
@@ -229,8 +272,21 @@ int main(int argc, char **argv){
                         main_menu = true;
                     }
                 }
+                if(game_over == false){
+                    x = 475;
+                    y = 250;
+                    oby = 600;
+                    ob2y = 900;
+                    mode = 0;
+                    wallLeftX = -800;
+                    wallRightX = 800;
+                    wall_rect.x = wallLeftX;
+                    wall_rect2.x = wallRightX;
+                    wall_rect1_2.x = wallLeftX;
+                    wall_rect2_2.x = wallRightX;
+                }
             }else{
-
+                
             SDL_RenderClear(renderer);
             float count = 0;
             fallx = 475;
@@ -386,7 +442,8 @@ int main(int argc, char **argv){
                 
             int wallWidth = 200;
 
-            if(x < wallWidth || x > width - wallWidth - 50){
+            //if(x < wallWidth || x > width - wallWidth - 50){
+                if(x < wallLeftX + 1000 || x > wallRightX - 20){
                 x = 475;
                 y = 250;
                 game_over = true;
@@ -492,6 +549,231 @@ int main(int argc, char **argv){
             
             SDL_RenderCopy(renderer, texture, NULL, &wall_rect2_2);
                 
+                //mode = 1;
+                
+                if(score % 10000 == 0){
+                    switchModes = true;
+                }
+                if(mode == 0){
+                    oby -= speed;
+                    ob2y -= speed;
+                    
+                    if(!switchModes){
+                        if(x + 20 >= obx && x <= obx + 70){
+                            if(oby + 50 >= y && oby <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        if(x + 20 >= ob2x && x <= ob2x + 50){
+                            if(oby + 50 >= y && oby <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        
+                        if(x + 20 >= ob3x && x <= ob3x + 100){
+                            if(oby + 50 >= y && oby <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        
+                        
+                        if(oby < -50){
+                            obx = (rand() % 520)+200;
+                            ob2x = (rand() % 550)+200;
+                            ob3x = (rand() % 500)+200;
+                            oby = 600;
+                            counted1 = 0;
+                        }
+                        
+                        
+                        if(x + 20 >= ob4x && x <= ob4x + 70){
+                            if(ob2y + 50 >= y && ob2y <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        if(x + 20 >= ob5x && x <= ob5x + 50){
+                            if(ob2y + 50 >= y && ob2y <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        
+                        if(x + 20 >= ob6x && x <= ob6x + 100){
+                            if(ob2y + 50 >= y && ob2y <= y+50){
+                                game_over = true;
+                            }
+                        }
+                        
+                        
+                        if(ob2y < -50){
+                            ob4x = (rand() % 520)+200;
+                            ob5x = (rand() % 550)+200;
+                            ob6x = (rand() % 500)+200;
+                            ob2y = 600;
+                            counted2 = 0;
+                            phases++;
+                        }
+                    } else {
+                        if(oby <= -50 && ob2y <= -50){
+                            mode = 1;
+                            oby = 600;
+                            ob2y = 900;
+                            setup = true;
+                            switchModes = false;
+                        }
+                    }
+                    
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_Rect rect2 = {obx, oby, 70, 50};
+                    SDL_RenderFillRect(renderer, &rect2);
+                    
+                    SDL_Rect rect3 = {ob2x, oby, 50, 50};
+                    SDL_RenderFillRect(renderer, &rect3);
+                    
+                    SDL_Rect rect4 = {ob3x, oby, 100, 50};
+                    SDL_RenderFillRect(renderer, &rect4);
+                    SDL_Rect rect5 = {ob4x, ob2y, 70, 50};
+                    SDL_RenderFillRect(renderer, &rect5);
+                    
+                    SDL_Rect rect6 = {ob5x, ob2y, 50, 50};
+                    SDL_RenderFillRect(renderer, &rect6);
+                    
+                    SDL_Rect rect7 = {ob6x, ob2y, 100, 50};
+                    SDL_RenderFillRect(renderer, &rect7);
+                    
+
+                    
+                } else {
+                    wallCount += 10;
+                    if(!switchModes){
+                        if(setup){
+                            if(wallCount > 30){
+                            wallLeftX += 1;
+                            wallRightX -= 1;
+                            wall_rect.x = wallLeftX;
+                            wall_rect2.x = wallRightX;
+                            wall_rect1_2.x = wallLeftX;
+                            wall_rect2_2.x = wallRightX;
+                                wallCount = 0;
+                            }
+                            if(wallLeftX >= -625){
+                                setup = false;
+                                complete = false;
+                                pos = rand() % 4;
+                            }
+                        } else {
+                            wall_rect.x = wallLeftX;
+                            wall_rect2.x = wallRightX;
+                            wall_rect1_2.x = wallLeftX;
+                            wall_rect2_2.x = wallRightX;
+                            
+                            if(pos == 0){
+                                if(!complete){
+                                    if(wallCount > 30){
+                                    wallLeftX -= 1;
+                                    wallRightX -= 1;
+                                        wallCount = 0;
+                                    }
+                                    if(wallLeftX <= wallPos1-1000){
+                                        //complete = true;
+                                        pos = rand() % 4;
+                                    }
+                                }
+                            } else if(pos == 1){
+                                if(!complete){
+                                    
+                                    if(wallLeftX < wallPos2 - 1000) {
+                                        if(wallCount > 30){
+                                            wallLeftX += 1;
+                                            wallRightX += 1;
+                                            wallCount = 0;
+                                        }
+                                        if(wallLeftX >= wallPos2-1000){
+                                            //complete = true;
+                                            pos = rand() % 4;
+                                        }
+                                    } else {
+                                        if(wallCount == 30){
+                                        wallLeftX -= 1;
+                                        wallRightX -= 1;
+                                            wallCount = 0;
+                                        }
+                                        if(wallLeftX <= wallPos2-1000){
+                                            //complete = true;
+                                            pos = rand() % 4;
+                                        }
+                                    }
+                                }
+                            } else if(pos == 2){
+                                if(!complete){
+                                    if(wallLeftX < wallPos3 - 1000) {
+                                        if(wallCount > 30){
+                                        wallLeftX += 1;
+                                        wallRightX += 1;
+                                            wallCount = 0;
+                                        }
+                                        if(wallLeftX >= wallPos3-1000){
+                                            //complete = true;
+                                            pos = rand() % 4;
+                                        }
+                                    } else {
+                                        if(wallCount > 30){
+                                        wallLeftX -= 1;
+                                        wallRightX -= 1;
+                                            wallCount = 0;
+                                        }
+                                        if(wallLeftX <= wallPos3-1000){
+                                            //complete = true;
+                                            pos = rand() % 4;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if(!complete){
+                                    if(wallCount > 30){
+                                    wallLeftX += 1;
+                                    wallRightX += 1;
+                                        wallCount = 0;
+                                    }
+                                     if(wallLeftX >= wallPos4-1000){
+                                        //complete = true;
+                                        pos = rand() % 4;
+                                    }
+                                }
+                            }
+                            
+                        }
+                        
+                        if(score % 10000 == 0){
+                            switchModes = true;
+                        }
+                        
+                    } else {
+                        wall_rect.x = wallLeftX;
+                        wall_rect2.x = wallRightX;
+                        wall_rect1_2.x = wallLeftX;
+                        wall_rect2_2.x = wallRightX;
+                        if(wallLeftX > -800){
+                            if(wallCount > 30){
+                            wallLeftX -= 1;
+                                wallCount = 0;
+                            }
+                        }
+                        if(wallRightX < 800){
+                            if(wallCount > 30){
+                                
+                            wallRightX += 1;
+                                wallCount = 0;
+                            }
+                        }
+                        if(wallLeftX <= -800 && wallRightX >= 800){
+                            wallLeftX = -800;
+                            wallRightX = 800;
+                            mode = 0;
+                            switchModes = false;
+                        }
+                    }
+                }
+                
                 if(game_over){
                     attempts++;
                     sprintf(array2, "%d", attempts);
@@ -503,7 +785,7 @@ int main(int argc, char **argv){
             SDL_DestroyTexture(Message2);
             SDL_FreeSurface(surfaceMessage);
             SDL_FreeSurface(surfaceMessage2);
-        }
+            }
         }
     }
     
