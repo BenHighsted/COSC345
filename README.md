@@ -15,7 +15,7 @@ Lastly, you will need to use homebrew to install sdl2_image onto your machine. T
 
 In the ZIP folder you download will be a Xcode project which, if you set up the librarys correctly, will have no issues to build and run. If you wish to run it through Xcode (rather than the executable provided), you will need to open the Xcode project, on the left side of the screen will be some folders (i.e. Headers, Assignment, Products) under the products folder will be an executable. If you right click it, and click open in finder (you should be taken to a folder called Debug), and then copy all the images given directly next to the executable, images will now work when running in Xcode. (see https://imgur.com/a/e5xLjzg)
 
-An exectuable will also be contained in another folder, which will have an executable and some images, which if you double click to run (and allow it in system preferences -> security and privacy) it will run our program outside of Xcode.
+An exectuable will also be contained in another folder (called ExectuableRelease), which will have an executable and some images, which if you double click to run (and allow it in system preferences -> security and privacy) it will run our program outside of Xcode.
 
 Here is a video showing our Alpha Release: https://www.youtube.com/watch?v=GJCgZItPklY.
 
