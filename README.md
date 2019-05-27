@@ -1,5 +1,6 @@
 # DUNGEON FALL
 COSC345 Group Project Otago University 2019
+
 Ben Highsted (5536340), Matthew Neil (7388248), Jasmine Hindson (TO BE ENTERED)
 
 We are creating a game called 'Dungeon Game' (name to be changed) programmed in C, using the SDL2 library (https://www.libsdl.org/download-2.0.php).
