@@ -1,7 +1,7 @@
 # DUNGEON FALL
 COSC345 Group Project Otago University 2019
 
-Ben Highsted (5536340), Matthew Neil (7388248), Jasmine Hindson (TO BE ENTERED)
+Ben Highsted (5536340), Matthew Neil (7388248), Jasmine Hindson (8148181)
 
 We are creating a game called 'Dungeon Game' (name to be changed) programmed in C, using the SDL2 library (https://www.libsdl.org/download-2.0.php).
 
@@ -13,5 +13,9 @@ Next, you will need to download SDL_TTF from https://www.libsdl.org/projects/SDL
 
 Lastly, you will need to use homebrew to install sdl2_image onto your machine. To install homebrew, simply type /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" into your MACOS terminal, and it will install. Once its installed or if you already have it, type 'brew install sdl2_image'. This will install sdl2 image into the correct directory and after doing this your librarys will all be setup to build and run our game.
 
+In the ZIP folder you download will be a code blocks project which, if you set up the librarys correctly, will have no issues to build and run. Also will be contained another folder, which will have an executable and some images, which if you double click to run (and allow it in system preferences -> security and privacy) and it will run our program outside of Xcode.
 
+MIGHT NEED TO ADD IMAGES TO EXECUTABLE LOCATION
+
+YOUTUBE LINK HERE.
 
