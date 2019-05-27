@@ -17,5 +17,5 @@ In the ZIP folder you download will be a Xcode project which, if you set up the 
 
 An exectuable will also be contained in another folder, which will have an executable and some images, which if you double click to run (and allow it in system preferences -> security and privacy) it will run our program outside of Xcode.
 
-YOUTUBE LINK HERE.
+Here is a video showing our Alpha Release: https://www.youtube.com/watch?v=GJCgZItPklY.
 
