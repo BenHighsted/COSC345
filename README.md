@@ -1,4 +1,7 @@
 # DUNGEON FALL
+
+# Before the Beta release, this will need to be updated to work as andrew said when we recieved the alpha back.
+
 COSC345 Group Project Otago University 2019
 
 Ben Highsted (5536340), Matthew Neil (7388248), Jasmine Hindson (8148181)
