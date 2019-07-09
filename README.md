@@ -1,6 +1,12 @@
-# DUNGEON FALL
-
 # Before the Beta release, this will need to be updated to work as andrew said when we recieved the alpha back.
+
+List of changes before Beta release:
+Animate sprites shooting up (and make a sound each time they are shot? I had a good idea for this -B).
+Add music.
+Make fireballs not overlap.
+Make random generation with fireballs and walls actually random (currently they are the artificial random).
+
+# DUNGEON FALL
 
 COSC345 Group Project Otago University 2019
 
