@@ -14,6 +14,12 @@ List of changes before Beta release:
 
 -Add difficulties.
 
+-Fix instructions on how to set up librarys.
+
+-Add a video showing the finished beta.
+
+-Create a man (manual) page?
+
 # DUNGEON FALL
 
 COSC345 Group Project Otago University 2019
