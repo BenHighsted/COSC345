@@ -2,13 +2,17 @@
 
 List of changes before Beta release:
 
-Animate sprites shooting up (and make a sound each time they are shot? I had a good idea for this -B).
+-Animate sprites shooting up (and make a sound each time they are shot? I had a good idea for this -B).
 
-Add music.
+-Add music.
 
-Make fireballs not overlap.
+-Make fireballs not overlap.
 
-Make random generation with fireballs and walls actually random (currently they are the artificial random).
+-Make random generation with fireballs and walls actually random (currently they are the artificial random).
+
+-Change walls a bit to make it a more interesting stage.
+
+-Add difficulties.
 
 # DUNGEON FALL
 
