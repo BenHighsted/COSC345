@@ -2,6 +2,8 @@
 
 List of changes before Beta release:
 
+-Increase size of window?
+
 -Animate sprites shooting up (and make a sound each time they are shot? I had a good idea for this -B).
 
 -Add music.
