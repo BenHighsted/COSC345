@@ -10,7 +10,7 @@ List of changes before Beta release:
 
 -Make random generation with fireballs and walls actually random (currently they are the artificial random).
 
--Change walls a bit to make it a more interesting stage.
+-Change walls a bit to make it a more interesting stage. Thinking rather than just moving in the walls randomly, we should have a set of pre-determined stages which it randomly selects on of.
 
 -Add difficulties.
 
@@ -18,7 +18,7 @@ List of changes before Beta release:
 
 -Add a video showing the finished beta.
 
--Create a man (manual) page?
+-Update Documentation
 
 # DUNGEON FALL
 
