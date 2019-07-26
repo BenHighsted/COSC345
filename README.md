@@ -2,19 +2,15 @@
 
 List of changes before Beta release:
 
--Increase size of window?
+-Create images for the text? Definitley for the title, maybe for other parts? Could actually shorten the amount of lines!!
 
--Animate sprites shooting up (and make a sound each time they are shot? I had a good idea for this -B).
+-Fix up collision detection
 
 -Add music.
 
--Make fireballs not overlap.
-
--Make random generation with fireballs and walls actually random (currently they are the artificial random).
+-Make random generation with fireballs and walls actually random (currently they are the artificial random). (Not sure if this is nessasary at this point)
 
 -Change walls a bit to make it a more interesting stage. Thinking rather than just moving in the walls randomly, we should have a set of pre-determined stages which it randomly selects on of.
-
--Add difficulties.
 
 -Fix instructions on how to set up librarys.
 
