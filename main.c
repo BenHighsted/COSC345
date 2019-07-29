@@ -167,6 +167,10 @@ int main(int argc, char **argv)
     SDL_Surface* surfaceMessage2;
     SDL_Texture* Message;
     SDL_Texture* Message2;
+    
+    SDL_Texture *description_texture = NULL;
+    SDL_Surface *image_description = NULL;
+    SDL_Rect description_image = {5, 250, 990, 250};
 
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
@@ -181,74 +185,37 @@ int main(int argc, char **argv)
                 SDL_Color textColor = {255, 255, 255};
                 
                 SDL_Rect nameRect = {300, 280, 370, 50};//basic rectangles
-                SDL_Rect descriptionRect = {50, 350, 890, 30};
-                SDL_Rect descriptionRect2 = {50, 390, 870, 30};
-                SDL_Rect descriptionRect3 = {50, 430, 890, 30};
-                SDL_Rect descriptionRect4 = {50, 470, 760, 30};
                 SDL_Rect infoRect = {370, 550, 200, 30};
                 SDL_Texture *sprite = NULL, *nameTexture = NULL;
                 SDL_Surface *nameSurface = NULL, *infoSurface = TTF_RenderText_Solid(font, "Press backspace", textColor);
-                SDL_Surface *descriptionSurface = NULL, *descriptionSurface2 = NULL;
-                SDL_Surface *descriptionSurface3 = NULL, *descriptionSurface4 = NULL;
-                SDL_Texture *descriptionTexture = NULL, *descriptionTexture2 = NULL;
-                SDL_Texture *descriptionTexture3 = NULL, *descriptionTexture4 = NULL;
                 
                 SDL_Texture* infoTexture = SDL_CreateTextureFromSurface(renderer, infoSurface);
                 //decides which text and sprite needs to be displayed, then displays it.
                 if (sprite1 == true) {
                     sprite = sprite1StraightTexture;
-                    nameSurface = TTF_RenderText_Solid(font, "Andrew the Lecturer", textColor);
-                    nameTexture = SDL_CreateTextureFromSurface(renderer, nameSurface);
-                    descriptionSurface = TTF_RenderText_Solid(font, "After seeing all the student evaluations for COSC345 that he had to get through, Andrew sat down at his desk and", textColor);
-                    descriptionSurface2 = TTF_RenderText_Solid(font, "began to read. The night was getting darker and darker and Andrew's eyes began to flicker as he started to fall", textColor);
-                    descriptionSurface3 = TTF_RenderText_Solid(font, "asleep. As his head hit the desk, his dreams convince him that he is falling down a hole. What a nightmare!", textColor);
-                    descriptionSurface4 = TTF_RenderText_Solid(font, "Can you help Andrew down the hole so that he can survive this nightmare?", textColor);
-                    descriptionTexture = SDL_CreateTextureFromSurface(renderer, descriptionSurface);
-                    descriptionTexture2 = SDL_CreateTextureFromSurface(renderer, descriptionSurface2);
-                    descriptionTexture3 = SDL_CreateTextureFromSurface(renderer, descriptionSurface3);
-                    descriptionTexture4 = SDL_CreateTextureFromSurface(renderer, descriptionSurface4);
+                    image_description = IMG_Load("andrew-description.png");
+                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
                 } else if (sprite2 == true) {
                     sprite = sprite2StraightTexture;
-                    nameSurface = TTF_RenderText_Solid(font, "Big Chungus the Bunny", textColor);
-                    nameTexture = SDL_CreateTextureFromSurface(renderer, nameSurface);
-                    descriptionSurface = TTF_RenderText_Solid(font, "Big Chungus, being the leader of his pack, led his bunny troop into the wilderness. He comes across a group of people", textColor);
-                    descriptionSurface2 = TTF_RenderText_Solid(font, "who have set camp for the night. He sees from a distance that they have a massive pile of carrots placed in a box", textColor);
-                    descriptionSurface3 = TTF_RenderText_Solid(font, "by the tents. DINNER! He calls his troops to charge, but as they hop towards the food, Big Chungas falls down a hole.", textColor);
-                    descriptionSurface4 = TTF_RenderText_Solid(font, "Can you help Big Chungas down the hole so he can get back to his bunny troop?", textColor);
-                    descriptionTexture = SDL_CreateTextureFromSurface(renderer, descriptionSurface);
-                    descriptionTexture2 = SDL_CreateTextureFromSurface(renderer, descriptionSurface2);
-                    descriptionTexture3 = SDL_CreateTextureFromSurface(renderer, descriptionSurface3);
-                    descriptionTexture4 = SDL_CreateTextureFromSurface(renderer, descriptionSurface4);
+                    image_description = IMG_Load("bunny-description.png");
+                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
                 } else if (sprite3 == true) {
                     sprite = sprite3StraightTexture;
-                    nameSurface = TTF_RenderText_Solid(font, "Matthew the Gamer", textColor);
-                    nameTexture = SDL_CreateTextureFromSurface(renderer, nameSurface);
-                    descriptionSurface = TTF_RenderText_Solid(font, "After a long dusty night of playing Fortnite, Matthew realised that his COSC345 tutorial was in 10mins.", textColor);
-                    descriptionSurface2 = TTF_RenderText_Solid(font, "He quickly bolts out the door with his shoes half on, and runs to class. On his way there he trips", textColor);
-                    descriptionSurface3 = TTF_RenderText_Solid(font, "over his shoe lace! Silly Matthew. He starts rolling across the ground until he falls down a hole. Oh no.", textColor);
-                    descriptionSurface4 = TTF_RenderText_Solid(font, "Can you help Matthew down the hole so he can get back to his COSC345 tutorial?", textColor);
-                    descriptionTexture = SDL_CreateTextureFromSurface(renderer, descriptionSurface);
-                    descriptionTexture2 = SDL_CreateTextureFromSurface(renderer, descriptionSurface2);
-                    descriptionTexture3 = SDL_CreateTextureFromSurface(renderer, descriptionSurface3);
-                    descriptionTexture4 = SDL_CreateTextureFromSurface(renderer, descriptionSurface4);
+                    image_description = IMG_Load("matthew-description.png");
+                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
                 }
                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copies all the textures into the renderer
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
                 SDL_RenderCopy(renderer, sprite, NULL, &sprite_rect2);
                 SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
-                SDL_RenderCopy(renderer, descriptionTexture, NULL, &descriptionRect);
-                SDL_RenderCopy(renderer, descriptionTexture2, NULL, &descriptionRect2);
-                SDL_RenderCopy(renderer, descriptionTexture3, NULL, &descriptionRect3);
-                SDL_RenderCopy(renderer, descriptionTexture4, NULL, &descriptionRect4);
                 SDL_RenderCopy(renderer, infoTexture, NULL, &infoRect);
+                SDL_RenderCopy(renderer, description_texture, NULL, &description_image);
+                
                 SDL_RenderPresent(renderer);
+                
                 destroyAndFree(nameSurface, nameTexture);
-                destroyAndFree(descriptionSurface, descriptionTexture);
-                destroyAndFree(descriptionSurface2, descriptionTexture2);
-                destroyAndFree(descriptionSurface3, descriptionTexture3);
-                destroyAndFree(descriptionSurface4, descriptionTexture4);
-                destroyAndFree(infoSurface, infoTexture);
+                destroyAndFree(image_description, description_texture);
                 
             } else if (main_menu_screen == true) {//standard main menu screen
                 counterAdd = 45;
