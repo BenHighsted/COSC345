@@ -52,6 +52,10 @@ int main(int argc, char **argv)
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Music *music = NULL;
     
+    Mix_Chunk *fireball = NULL;//loading in the fireball sound effect
+    fireball = Mix_LoadWAV("fireball.mp3");
+    
+    //find music, use this to load it in!
     //Load the music
     //music = Mix_LoadMUS("");
     
@@ -85,9 +89,9 @@ int main(int argc, char **argv)
     
     float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0;
     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0;
-    float obx = (rand() % 520)+200, ob2x = (rand() % 550)+200, ob3x = (rand() % 500)+200;
+    float obx = (rand() % 480)+200, ob2x = (rand() % 480)+200, ob3x = (rand() % 480)+200;
     float ob4x = (rand() % 520)+200, ob5x = (rand() % 550)+200, ob6x = (rand() % 500)+200;
-    int speed = 4, oby = 810, ob2y = 1110;
+    int speed = 4, oby = -100, ob2y = 10000000;
     float wallPos1 = 100, wallPos2 = 300, wallPos3 = 500, wallPos4 = 700;
     
     bool add = true, fall = false, first_loop = false, running = true;
@@ -96,6 +100,7 @@ int main(int argc, char **argv)
     bool main_menu = true, game_over = false, rightmove = false;
     bool character_description = false, main_menu_screen = true;
     bool sprite1 = true, sprite2 = false, sprite3 = false;
+    bool first_time = true;
     
     char *array = (char *) malloc(64);
     char *array2 = (char *) malloc(64);
@@ -113,14 +118,20 @@ int main(int argc, char **argv)
     SDL_Rect MainMenu_rect = {300, 400, 400, 50};
     SDL_Rect MainMenu_rect2 = {250, 300, 500, 50};
     SDL_Rect Title_rect = {150, 50, 700, 300};
-    SDL_Rect Title_background_rect = {0, 0, 1000, 700};
-    SDL_Rect Title_background_rect2 = {0, 699, 1000, 700};
-    SDL_Rect background_rect = {0, 0, 1000, 700};
-    SDL_Rect background_rect2 = {0, 699, 1000, 700};
+    SDL_Rect Title_background_rect = {0, 0, 1000, 710};
+    SDL_Rect Title_background_rect2 = {0, 700, 1000, 710};
+    SDL_Rect background_rect = {0, 0, 1000, 710};
+    SDL_Rect background_rect2 = {0, 710, 1000, 710};
     SDL_Rect sprite1_rect = {200, 340, 130, 130};
     SDL_Rect sprite_rect2 = {350, 50, 220, 220};
     SDL_Rect sprite2_rect = {400, 340, 130, 130};
     SDL_Rect sprite3_rect = {600, 340, 130, 130};
+    
+    //SDL_Rect source_rect = {0, 0, 10, 26};
+    
+    SDL_Rect source_rect_red = {0, 0, 10, 26};
+    SDL_Rect source_rect_blue = {0, 0, 9, 24};
+    SDL_Rect source_rect_green = {0, 0, 9, 25};
     
     SDL_Event event;//starts SDL event
     
@@ -145,20 +156,19 @@ int main(int argc, char **argv)
     SDL_Surface *sprite3Falling = IMG_Load("Sprite3falling.png");
     SDL_Texture *sprite3FallingTexture = SDL_CreateTextureFromSurface(renderer, sprite3Falling);
     //Fireball/Object textures
-    SDL_Surface *fireRed = IMG_Load("fireRed.png");//Following images from https://stealthix.itch.io/animated-fires
+    SDL_Surface *fireRed = IMG_Load("fire-red.png");//Following images from https://stealthix.itch.io/animated-fires
     SDL_Texture *fireRedTexture = SDL_CreateTextureFromSurface(renderer, fireRed);
-    SDL_Surface *fireBlue = IMG_Load("fireBlue.png");
+    SDL_Surface *fireBlue = IMG_Load("fire-blue.png");
     SDL_Texture *fireBlueTexture = SDL_CreateTextureFromSurface(renderer, fireBlue);
-    SDL_Surface *fireGreen = IMG_Load("fireGreen.png");
+    SDL_Surface *fireGreen = IMG_Load("fire-green.png");
     SDL_Texture *fireGreenTexture = SDL_CreateTextureFromSurface(renderer, fireGreen);
     //Other
     SDL_Surface* surfaceMessage;
     SDL_Surface* surfaceMessage2;
     SDL_Texture* Message;
     SDL_Texture* Message2;
-    
+
     while(running){
-        
         SDL_Delay(time_left());//used to run at the same speed on every device
         next_time += TICK_INTERVAL;
         
@@ -434,8 +444,9 @@ int main(int argc, char **argv)
                     score = 0;
                     x = 475;
                     y = 250;
-                    oby = 600;
-                    ob2y = 900;
+                    oby = -100;
+                    ob2y = 10000;
+                    first_time = true;
                     mode = 0;
                     wallLeftX = -800;
                     wallRightX = 800;
@@ -445,6 +456,37 @@ int main(int argc, char **argv)
                     wall_rect2_2.x = wallRightX;
                 }
             } else {//no menus currently running, start and run game
+                
+                source_rect_red.x += 10;
+                if(source_rect_red.x >= 100){
+                    source_rect_red.x = 0;
+                    source_rect_red.y += 26;
+                }
+                if(source_rect_red.y >= 156) {
+                    source_rect_red.x = 0;
+                    source_rect_red.y = 0;
+                }
+                
+                source_rect_blue.x += 9;
+                if(source_rect_blue.x >= 90){
+                    source_rect_blue.x = 0;
+                    source_rect_blue.y += 24;
+                }
+                if(source_rect_blue.y >= 144) {
+                    source_rect_blue.x = 0;
+                    source_rect_blue.y = 0;
+                }
+                
+                source_rect_green.x += 9;
+                if(source_rect_green.x >= 90){
+                    source_rect_green.x = 0;
+                    source_rect_green.y += 25;
+                }
+                if(source_rect_green.y >= 150) {
+                    source_rect_green.x = 0;
+                    source_rect_green.y = 0;
+                }
+                
                 SDL_Texture* spriteFallingTexture = NULL;
                 if(sprite1 == true) {//selects the correct sprite that the player chose
                     spriteFallingTexture = sprite1FallingTexture;
@@ -687,11 +729,20 @@ int main(int argc, char **argv)
                             }
                         }
                         
-                        if(oby < -50) {//resets the objects to be used again once off screen
-                            obx = (rand() % 520) + 200;
-                            ob2x = (rand() % 550) + 200;
-                            ob3x = (rand() % 500) + 200;
-                            oby = 600;
+                        if(oby < -78) {//resets the objects to be used again once off screen
+                            while(true){
+                                obx = (rand() % 480) + 200;
+                                ob2x = (rand() % 480) + 200;
+                                ob3x = (rand() % 480) + 200;
+                                oby = 700;
+                                if(obx - ob2x > 120 || ob2x - obx > 120){
+                                    if(obx - ob3x > 120 || ob3x - obx > 120) {
+                                        if(ob2x - ob3x > 120 || ob3x - ob2x > 120) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
                         
                         if(x + 20 >= ob4x && x <= ob4x + 100) {//collision detection for fireballs
@@ -711,11 +762,21 @@ int main(int argc, char **argv)
                             }
                         }
                         
-                        if(ob2y < -50) {//resets the objects to be used again once off screen
-                            ob4x = (rand() % 520) + 200;
-                            ob5x = (rand() % 550) + 200;
-                            ob6x = (rand() % 500) + 200;
-                            ob2y = 600;
+                        if(ob2y < -78 || (first_time && oby <= 350)) {//resets the objects to be used again once off screen
+                            first_time = false;
+                            while(true){
+                                ob4x = (rand() % 480) + 200;
+                                ob5x = (rand() % 480) + 200;
+                                ob6x = (rand() % 480) + 200;
+                                ob2y = 700;
+                                if(ob4x - ob5x > 120 || ob5x - ob4x > 120){
+                                    if(ob4x - ob6x > 120 || ob6x - ob4x > 120) {
+                                        if(ob5x - ob6x > 120 || ob6x - ob5x > 120) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     } else {
                         if(oby <= -50 && ob2y <= -50) {
@@ -727,24 +788,59 @@ int main(int argc, char **argv)
                         }
                     }
                     //draws the objects
-                    SDL_Rect rect2 = {obx, oby, 100, 50};
                     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireBlueTexture, NULL, &rect2);
-                    SDL_Rect rect3 = {ob2x, oby, 70, 50};
-                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireGreenTexture, NULL, &rect3);
-                    SDL_Rect rect4 = {ob3x, oby, 100, 50};
-                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireRedTexture, NULL, &rect4);
-                    SDL_Rect rect5 = {ob4x, ob2y, 100, 50};
-                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireBlueTexture, NULL, &rect5);
-                    SDL_Rect rect6 = {ob5x, ob2y, 70, 50};
-                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireGreenTexture, NULL, &rect6);
-                    SDL_Rect rect7 = {ob6x, ob2y, 100, 50};
-                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-                    SDL_RenderCopy(renderer, fireRedTexture, NULL, &rect7);
+                    
+                    SDL_Rect rect_blue_1 = {obx, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_1);
+                    SDL_Rect rect_blue_2 = {obx+30, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_2);
+                    SDL_Rect rect_blue_3 = {obx+60, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_3);
+                    SDL_Rect rect_blue_4 = {obx+90, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_4);
+                    SDL_Rect rect_blue_5 = {ob4x, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_5);
+                    SDL_Rect rect_blue_6 = {ob4x+30, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_6);
+                    SDL_Rect rect_blue_7 = {ob4x+60, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_7);
+                    SDL_Rect rect_blue_8 = {ob4x+90, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireBlueTexture, &source_rect_blue, &rect_blue_8);
+                    
+                    SDL_Rect rect_green_1 = {ob2x, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_1);
+                    SDL_Rect rect_green_2 = {ob2x+30, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_2);
+                    SDL_Rect rect_green_3 = {ob2x+60, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_3);
+                    SDL_Rect rect_green_4 = {ob2x+90, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_4);
+                    SDL_Rect rect_green_5 = {ob5x, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_5);
+                    SDL_Rect rect_green_6 = {ob5x+30, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_6);
+                    SDL_Rect rect_green_7 = {ob5x+60, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_7);
+                    SDL_Rect rect_green_8 = {ob5x+90, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireGreenTexture, &source_rect_green, &rect_green_8);
+                    
+                    SDL_Rect rect_red_1 = {ob3x, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_1);
+                    SDL_Rect rect_red_2 = {ob3x+30, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_2);
+                    SDL_Rect rect_red_3 = {ob3x+60, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_3);
+                    SDL_Rect rect_red_4 = {ob3x+90, oby, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_4);
+                    SDL_Rect rect_red_5 = {ob6x, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_5);
+                    SDL_Rect rect_red_6 = {ob6x+30, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_6);
+                    SDL_Rect rect_red_7 = {ob6x+60, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_7);
+                    SDL_Rect rect_red_8 = {ob6x+90, ob2y, 30, 78};
+                    SDL_RenderCopy(renderer, fireRedTexture, &source_rect_red, &rect_red_8);
+                    //Mix_PlayChannel( -1, fireball, 0 );
                     
                 } else {//mode 2, so walls
                     int speed2 = 2;//sets the speed the walls will move
@@ -866,10 +962,12 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
                 SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
                 
-                SDL_RenderPresent(renderer);
+                //SDL_RenderPresent(renderer);
                 
                 destroyAndFree(surfaceMessage, Message);
                 destroyAndFree(surfaceMessage2, Message2);
+                SDL_RenderPresent(renderer);
+
             }
         }
     }
