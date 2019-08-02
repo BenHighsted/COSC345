@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     //    return false;
     //}
     
-    Mix_PlayMusic(music, -1);
+    //Mix_PlayMusic(music, -1);
     
     SDL_Init(SDL_INIT_VIDEO);//Initialize SDL and creates a window/renderer
     SDL_Window *window = SDL_CreateWindow("Dungeon Fall", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     
     /** Variable Declarations **/
     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250;
-    int startx = 300, starty = 530, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
+    int startx = 300, starty = 600, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
     int mode = 0, pos = 0, position = 185;
     int startyGameOver = 560, currentScore = 0;
     
@@ -118,8 +118,6 @@ int main(int argc, char **argv)
     wall_rect2_2.y = 700;
     SDL_Rect Message_rect = {505, 5, 35, 20};
     SDL_Rect Message_rect2 = {450, 0, 50, 30};
-    SDL_Rect MainMenu_rect = {300, 400, 400, 50};
-    SDL_Rect MainMenu_rect2 = {250, 300, 500, 50};
     SDL_Rect Title_rect = {150, 50, 700, 300};
     SDL_Rect Title_background_rect = {0, 0, 1000, 710};
     SDL_Rect Title_background_rect2 = {0, 700, 1000, 710};
@@ -129,9 +127,6 @@ int main(int argc, char **argv)
     SDL_Rect sprite_rect2 = {350, 50, 220, 220};
     SDL_Rect sprite2_rect = {400, 370, 130, 130};
     SDL_Rect sprite3_rect = {600, 370, 130, 130};
-    
-    //SDL_Rect source_rect = {0, 0, 10, 26};
-    
     SDL_Rect source_rect_red = {0, 0, 10, 26};
     SDL_Rect source_rect_blue = {0, 0, 9, 24};
     SDL_Rect source_rect_green = {0, 0, 9, 25};
@@ -166,18 +161,16 @@ int main(int argc, char **argv)
     SDL_Surface *fireGreen = IMG_Load("fire-green.png");
     SDL_Texture *fireGreenTexture = SDL_CreateTextureFromSurface(renderer, fireGreen);
     //Other
-    SDL_Surface* surfaceMessage;
-    SDL_Surface* surfaceMessage2;
-    SDL_Texture* Message;
-    SDL_Texture* Message2;
-
+    SDL_Surface *surfaceMessage;
+    SDL_Surface *surfaceMessage2;
+    SDL_Texture *Message;
+    SDL_Texture *Message2;
     SDL_Surface *image1_description = IMG_Load("andrew-description.png");
     SDL_Texture *description_texture1 = SDL_CreateTextureFromSurface(renderer, image1_description);
     SDL_Surface *image2_description = IMG_Load("bunny-description.png");
     SDL_Texture *description_texture2 = SDL_CreateTextureFromSurface(renderer, image2_description);
     SDL_Surface *image3_description = IMG_Load("matthew-description.png");
     SDL_Texture *description_texture3 = SDL_CreateTextureFromSurface(renderer, image3_description);
-    
     SDL_Rect description_image = {5, 250, 990, 250};
     
     //game over screen
@@ -195,6 +188,12 @@ int main(int argc, char **argv)
     SDL_Texture *attemptMessageTexture = SDL_CreateTextureFromSurface(renderer, attemptMessageSurface);
     SDL_Texture *scoreMessageTexture = SDL_CreateTextureFromSurface(renderer, scoreMessageSurface);
     SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
+    
+    //main menu screen
+    SDL_Surface *mainMenuTitleSurface = IMG_Load("menuTitle.png");
+    SDL_Texture *mainMenuTitleTexture = SDL_CreateTextureFromSurface(renderer, mainMenuTitleSurface);
+    SDL_Surface *mainMenuStartSurface = IMG_Load("menuStart.png");
+    SDL_Texture *mainMenuStartTexture = SDL_CreateTextureFromSurface(renderer, mainMenuStartSurface);
 
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
@@ -275,13 +274,11 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, sprite3StraightTexture, NULL, &sprite3_rect);
                 SDL_RenderCopy(renderer, border, NULL, &border_rect);
                 
-                SDL_Surface* titleMessage = TTF_RenderText_Solid(font, "DUNGEON FALL", textColor);//creates the title
-                SDL_Texture* titleMessage2 = SDL_CreateTextureFromSurface(renderer, titleMessage);
-                SDL_RenderCopy(renderer, titleMessage2, NULL, &Title_rect);
+                SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
                 
                 SDL_Rect MainMenu_rect = {startx, starty, 400, 50};
                 SDL_Rect pick_rect = {190, 290, 300, 40};
-                SDL_Rect enter_rect = {position+6, 520, 150, 20};
+                SDL_Rect enter_rect = {position + 6, 520, 150, 20};
                 
                 if(add){//animates the 'start' text
                     if(menuCounter == 4) {
@@ -304,7 +301,7 @@ int main(int argc, char **argv)
                     sprite2 = false;
                     sprite3 = false;
                 } else if (position == 385) {
-                    sprite1= false;
+                    sprite1 = false;
                     sprite2 = true;
                     sprite3 = false;
                 } else if(position == 585){
@@ -321,13 +318,12 @@ int main(int argc, char **argv)
                 SDL_Texture* enterTexture = SDL_CreateTextureFromSurface(renderer, enterSurface);
                 
                 SDL_RenderCopy(renderer, pickMessage2, NULL, &pick_rect);
-                SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
+                SDL_RenderCopy(renderer, mainMenuStartTexture, NULL, &MainMenu_rect);
                 SDL_RenderCopy(renderer, enterTexture, NULL, &enter_rect);
                 
                 SDL_RenderPresent(renderer);//draws the menu
                 
                 destroyAndFree(pickMessage, pickMessage2);
-                destroyAndFree(titleMessage, titleMessage2);
                 destroyAndFree(mainMessage, mainMessage2);
                 destroyAndFree(enterSurface, enterTexture);
             }
@@ -391,7 +387,7 @@ int main(int argc, char **argv)
                     addGameOver = true;
                 }
                 
-                SDL_Rect tryAgainTitleRect = {265, startyGameOver, 500, 400};
+                SDL_Rect tryAgainTitleRect = {startx, startyGameOver, 400, 400};
                 
                 if(addGameOver){//animates the 'start' text
                     if(menuCounterGameOver == 4) {
@@ -408,13 +404,10 @@ int main(int argc, char **argv)
                 SDL_RenderClear(renderer);
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
-                
                 SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
                 SDL_Texture* attemptCountTexture = SDL_CreateTextureFromSurface(renderer, attemptCountSurface);
-                
                 SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, array, textColor);
                 SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
-                
                 SDL_Surface* highScoreSurface = TTF_RenderText_Solid(font, array3, textColor);
                 SDL_Texture* highScoreTexture = SDL_CreateTextureFromSurface(renderer, highScoreSurface);
                 
@@ -458,8 +451,9 @@ int main(int argc, char **argv)
                     score = 0;
                     x = 475;
                     y = 250;
-                    oby = 700;
-                    ob2y = 900;
+                    oby = -100;
+                    ob2y = 10000;
+                    first_time = true;
                     mode = 0;
                     wallLeftX = -800;
                     wallRightX = 800;
@@ -533,7 +527,6 @@ int main(int argc, char **argv)
                     SDL_RenderClear(renderer);
                     count += 10;
                     //code below moves the walls and background for the first loop animation
-                    SDL_Color textColor = {255, 255, 255};
                     counter = 0;
                     background_rect.y -= 3;
                     if(background_rect.y <= -700) {
@@ -570,9 +563,7 @@ int main(int argc, char **argv)
                     }
                     SDL_RenderCopy(renderer, texture, NULL, &wall_rect2_2);
                     
-                    SDL_Surface* titleMessage = TTF_RenderText_Solid(font, "DUNGEON FALL", textColor);
-                    SDL_Texture* titleMessage2 = SDL_CreateTextureFromSurface(renderer, titleMessage);
-                    SDL_RenderCopy(renderer, titleMessage2, NULL, &Title_rect);
+                    SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
                     
                     if(count > 1500) {//enough time has passed, start the character falling
                         SDL_Rect falling_rect = {fallx, fally, 80, 80};
@@ -587,7 +578,6 @@ int main(int argc, char **argv)
                         }
                     }
                     SDL_RenderPresent(renderer);
-                    destroyAndFree(titleMessage, titleMessage2);
                 }//animation ends here
                 
                 while(SDL_PollEvent(&event)){
@@ -648,7 +638,7 @@ int main(int argc, char **argv)
                     game_over = true;
                 }
                 
-                if(y > 550 || y < 0) {//detects if a player goes to high or low
+                if(y > 700 || y < 0) {//detects if a player goes to high or low
                     game_over = true;
                 }
                 //moves the background
@@ -984,13 +974,10 @@ int main(int argc, char **argv)
                 
                 SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
                 SDL_RenderCopy(renderer, Message2, NULL, &Message_rect2);
-                
-                //SDL_RenderPresent(renderer);
-                
+
                 destroyAndFree(surfaceMessage, Message);
                 destroyAndFree(surfaceMessage2, Message2);
                 SDL_RenderPresent(renderer);
-
             }
         }
     }
