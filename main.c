@@ -125,10 +125,10 @@ int main(int argc, char **argv)
     SDL_Rect Title_background_rect2 = {0, 700, 1000, 710};
     SDL_Rect background_rect = {0, 0, 1000, 710};
     SDL_Rect background_rect2 = {0, 710, 1000, 710};
-    SDL_Rect sprite1_rect = {200, 340, 130, 130};
+    SDL_Rect sprite1_rect = {200, 370, 130, 130};
     SDL_Rect sprite_rect2 = {350, 50, 220, 220};
-    SDL_Rect sprite2_rect = {400, 340, 130, 130};
-    SDL_Rect sprite3_rect = {600, 340, 130, 130};
+    SDL_Rect sprite2_rect = {400, 370, 130, 130};
+    SDL_Rect sprite3_rect = {600, 370, 130, 130};
     
     //SDL_Rect source_rect = {0, 0, 10, 26};
     
@@ -254,14 +254,14 @@ int main(int argc, char **argv)
                     fallCounter = 0;
                 }
                 
-                if(starty == 530) {//decides if we need to add or minus from the 'start' animation
+                if(starty == 605) {//decides if we need to add or minus from the 'start' animation
                     add = false;
-                }else if(starty == 510) {
+                }else if(starty == 575) {
                     add = true;
                 }
                 
                 SDL_Rect falling_rect = {fallx, fally, 100, 100};//falling character
-                SDL_Rect border_rect = {position, 325, 160, 160};//border around current sprite
+                SDL_Rect border_rect = {position, 355, 160, 160};//border around current sprite
                 
                 SDL_Color textColor = {255, 255, 255};
                 SDL_RenderClear(renderer);
@@ -280,8 +280,8 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, titleMessage2, NULL, &Title_rect);
                 
                 SDL_Rect MainMenu_rect = {startx, starty, 400, 50};
-                SDL_Rect pick_rect = {190, 265, 300, 40};
-                SDL_Rect enter_rect = {position+6, 490, 150, 20};
+                SDL_Rect pick_rect = {190, 290, 300, 40};
+                SDL_Rect enter_rect = {position+6, 520, 150, 20};
                 
                 if(add){//animates the 'start' text
                     if(menuCounter == 4) {
@@ -331,6 +331,7 @@ int main(int argc, char **argv)
                 destroyAndFree(mainMessage, mainMessage2);
                 destroyAndFree(enterSurface, enterTexture);
             }
+
             
             while(SDL_PollEvent(&event)) {
                 if(event.key.keysym.sym == SDLK_SPACE){//start game
