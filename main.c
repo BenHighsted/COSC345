@@ -86,8 +86,9 @@ int main(int argc, char **argv)
     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250;
     int startx = 300, starty = 530, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
     int mode = 0, pos = 0, position = 185;
+    int startyGameOver = 560, currentScore = 0;
     
-    float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0;
+    float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0, menuCounterGameOver = 0;
     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0;
     float obx = (rand() % 480)+200, ob2x = (rand() % 480)+200, ob3x = (rand() % 480)+200;
     float ob4x = (rand() % 520)+200, ob5x = (rand() % 550)+200, ob6x = (rand() % 500)+200;
@@ -101,9 +102,11 @@ int main(int argc, char **argv)
     bool character_description = false, main_menu_screen = true;
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true;
+    bool addGameOver = true, leaderboard = false;
     
     char *array = (char *) malloc(64);
     char *array2 = (char *) malloc(64);
+    char *array3 = (char *) malloc(64);
     
     /** Rectangle Declarations **/
     SDL_Rect wall_rect = {-800, 0, 1000, 700};
@@ -167,10 +170,31 @@ int main(int argc, char **argv)
     SDL_Surface* surfaceMessage2;
     SDL_Texture* Message;
     SDL_Texture* Message2;
+
+    SDL_Surface *image1_description = IMG_Load("andrew-description.png");
+    SDL_Texture *description_texture1 = SDL_CreateTextureFromSurface(renderer, image1_description);
+    SDL_Surface *image2_description = IMG_Load("bunny-description.png");
+    SDL_Texture *description_texture2 = SDL_CreateTextureFromSurface(renderer, image2_description);
+    SDL_Surface *image3_description = IMG_Load("matthew-description.png");
+    SDL_Texture *description_texture3 = SDL_CreateTextureFromSurface(renderer, image3_description);
     
-    SDL_Texture *description_texture = NULL;
-    SDL_Surface *image_description = NULL;
     SDL_Rect description_image = {5, 250, 990, 250};
+    
+    //game over screen
+    SDL_Surface *leaderTitleSurface = IMG_Load("titleLeaderboard.png");
+    SDL_Surface *gameOverTitleSurface = IMG_Load("titleGameOver.png");
+    SDL_Surface *menuTitleSurface = IMG_Load("titleMenu.png");
+    SDL_Surface *tryAgainTitleSurface = IMG_Load("titleTryAgain.png");
+    SDL_Surface *attemptMessageSurface = IMG_Load("messageAttempt.png");
+    SDL_Surface *scoreMessageSurface = IMG_Load("messageScore.png");
+    SDL_Surface *highScoreMessageSurface = IMG_Load("messageHighScore.png");
+    SDL_Texture *leaderTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderTitleSurface);
+    SDL_Texture *gameOverTitleTexture = SDL_CreateTextureFromSurface(renderer, gameOverTitleSurface);
+    SDL_Texture *menuTitleTexture = SDL_CreateTextureFromSurface(renderer, menuTitleSurface);
+    SDL_Texture *tryAgainTitleTexture = SDL_CreateTextureFromSurface(renderer, tryAgainTitleSurface);
+    SDL_Texture *attemptMessageTexture = SDL_CreateTextureFromSurface(renderer, attemptMessageSurface);
+    SDL_Texture *scoreMessageTexture = SDL_CreateTextureFromSurface(renderer, scoreMessageSurface);
+    SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
 
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
@@ -191,31 +215,27 @@ int main(int argc, char **argv)
                 
                 SDL_Texture* infoTexture = SDL_CreateTextureFromSurface(renderer, infoSurface);
                 //decides which text and sprite needs to be displayed, then displays it.
-                if (sprite1 == true) {
-                    sprite = sprite1StraightTexture;
-                    image_description = IMG_Load("andrew-description.png");
-                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
-                } else if (sprite2 == true) {
-                    sprite = sprite2StraightTexture;
-                    image_description = IMG_Load("bunny-description.png");
-                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
-                } else if (sprite3 == true) {
-                    sprite = sprite3StraightTexture;
-                    image_description = IMG_Load("matthew-description.png");
-                    description_texture = SDL_CreateTextureFromSurface(renderer, image_description);
-                }
                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copies all the textures into the renderer
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
-                SDL_RenderCopy(renderer, sprite, NULL, &sprite_rect2);
                 SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
                 SDL_RenderCopy(renderer, infoTexture, NULL, &infoRect);
-                SDL_RenderCopy(renderer, description_texture, NULL, &description_image);
-                
+                if (sprite1 == true) {
+                    sprite = sprite1StraightTexture;
+                    SDL_RenderCopy(renderer, description_texture1, NULL, &description_image);
+                } else if (sprite2 == true) {
+                    sprite = sprite2StraightTexture;
+                    SDL_RenderCopy(renderer, description_texture2, NULL, &description_image);
+                } else if (sprite3 == true) {
+                    sprite = sprite3StraightTexture;
+                    SDL_RenderCopy(renderer, description_texture3, NULL, &description_image);
+                }
+                SDL_RenderCopy(renderer, sprite, NULL, &sprite_rect2);
                 SDL_RenderPresent(renderer);
                 
                 destroyAndFree(nameSurface, nameTexture);
-                destroyAndFree(image_description, description_texture);
+                destroyAndFree(infoSurface, infoTexture);
+                
                 
             } else if (main_menu_screen == true) {//standard main menu screen
                 counterAdd = 45;
@@ -341,14 +361,21 @@ int main(int argc, char **argv)
         }else{
             if(game_over == true){//if you lose
                 counterAdd = 45;
+                menuCounterGameOver += 2;
                 
                 SDL_Color textColor = {255, 255, 255};
+                
+                SDL_Rect leaderTitleRect = {261, 370, 500, 400};
+                SDL_Rect menuTitleRect = {260, 440, 500, 400};
+                SDL_Rect gameOverTitleRect = {130, -60, 750, 600};
+                SDL_Rect attemptMessageRect = {280, 130, 400, 300};
+                SDL_Rect scoreMessageRect = {280, 190, 400, 300};
+                SDL_Rect highScoreMessageRect = {260, 250, 400, 300};
+                
                 SDL_Rect game_over_back2 = {0, 0, 1000, 700};
-                SDL_Rect GameOver_rect = {230, 50, 500, 100};
-                SDL_Rect Attempts_rect = {380, 150, 200, 50};
-                SDL_Rect Attempts_rect2 = {585, 150, 20, 45 };
-                SDL_Rect Score_rect = {380, 210, 90, 40};
-                SDL_Rect Score_rect2 = {480, 210, 100, 30};
+                SDL_Rect attemptsRect = {590, 165, 25, 50};
+                SDL_Rect highscoreRect = {560, 300, 50, 30};
+                SDL_Rect scoreRect = {530, 240, 50, 30};
                 
                 sprintf(array, "%d", score);//gets current score
                 
@@ -357,63 +384,81 @@ int main(int argc, char **argv)
                 move_up = false;
                 move_down = false;
                 
+                if(startyGameOver == 560) {//decides if we need to add or minus from the 'start' animation
+                    addGameOver = false;
+                }else if(startyGameOver == 530) {
+                    addGameOver = true;
+                }
+                
+                SDL_Rect tryAgainTitleRect = {265, startyGameOver, 500, 400};
+                
+                if(addGameOver){//animates the 'start' text
+                    if(menuCounterGameOver == 4) {
+                        startyGameOver += 1;
+                        menuCounterGameOver = 0;
+                    }
+                }else{
+                    if(menuCounterGameOver == 4) {
+                        startyGameOver -= 1;
+                        menuCounterGameOver = 0;
+                    }
+                }
+                
                 SDL_RenderClear(renderer);
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
                 
-                SDL_Surface* gameOverSurface = TTF_RenderText_Solid(font, "Game Over!", textColor);
-                SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
+                SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
+                SDL_Texture* attemptCountTexture = SDL_CreateTextureFromSurface(renderer, attemptCountSurface);
                 
-                SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to try again!", textColor);
-                SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
-                SDL_Surface* mainMessage3 = TTF_RenderText_Solid(font, "Press 'M' to return to the menu!", textColor);
-                SDL_Texture* mainMessage4 = SDL_CreateTextureFromSurface(renderer, mainMessage3);
-                
-                SDL_Surface* attemptMessage = TTF_RenderText_Solid(font, "Attempt number: ", textColor);
-                SDL_Texture* attemptMessage2 = SDL_CreateTextureFromSurface(renderer, attemptMessage);
-                SDL_Surface* attemptCount = TTF_RenderText_Solid(font, array2, textColor);
-                SDL_Texture* attemptCount2 = SDL_CreateTextureFromSurface(renderer, attemptCount);
-                
-                SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, "Score: ", textColor);
+                SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, array, textColor);
                 SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
-                SDL_Surface* scoreSurface1 = TTF_RenderText_Solid(font, array, textColor);
-                SDL_Texture* scoreTexture1 = SDL_CreateTextureFromSurface(renderer, scoreSurface1);
                 
-                SDL_RenderCopy(renderer, gameOverTexture, NULL, &GameOver_rect);
-                SDL_RenderCopy(renderer, attemptMessage2, NULL, &Attempts_rect);
-                SDL_RenderCopy(renderer, attemptCount2, NULL, &Attempts_rect2);
-                SDL_RenderCopy(renderer, mainMessage2, NULL, &MainMenu_rect);
-                SDL_RenderCopy(renderer, mainMessage4, NULL, &MainMenu_rect2);
-                SDL_RenderCopy(renderer, scoreTexture, NULL, &Score_rect);
-                SDL_RenderCopy(renderer, scoreTexture1, NULL, &Score_rect2);
+                SDL_Surface* highScoreSurface = TTF_RenderText_Solid(font, array3, textColor);
+                SDL_Texture* highScoreTexture = SDL_CreateTextureFromSurface(renderer, highScoreSurface);
+                
+                SDL_RenderCopy(renderer, leaderTitleTexture, NULL, &leaderTitleRect);
+                SDL_RenderCopy(renderer, gameOverTitleTexture, NULL, &gameOverTitleRect);
+                SDL_RenderCopy(renderer, menuTitleTexture, NULL, &menuTitleRect);
+                SDL_RenderCopy(renderer, tryAgainTitleTexture, NULL, &tryAgainTitleRect);
+                SDL_RenderCopy(renderer, attemptMessageTexture, NULL, &attemptMessageRect);
+                SDL_RenderCopy(renderer, scoreMessageTexture, NULL, &scoreMessageRect);
+                SDL_RenderCopy(renderer, highScoreMessageTexture, NULL, &highScoreMessageRect);
+                
+                SDL_RenderCopy(renderer, highScoreTexture, NULL, &highscoreRect);
+                SDL_RenderCopy(renderer, attemptCountTexture, NULL, &attemptsRect);
+                SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
                 
                 SDL_RenderPresent(renderer);
                 
-                destroyAndFree(gameOverSurface, gameOverTexture);
-                destroyAndFree(mainMessage, mainMessage2);
-                destroyAndFree(mainMessage3, mainMessage4);
-                destroyAndFree(attemptMessage, attemptMessage2);
-                destroyAndFree(attemptCount, attemptCount2);
+                destroyAndFree(highScoreSurface, highScoreTexture);
+                destroyAndFree(attemptCountSurface, attemptCountTexture);
                 destroyAndFree(scoreSurface, scoreTexture);
-                destroyAndFree(scoreSurface1, scoreTexture1);
                 
                 while(SDL_PollEvent(&event)) {
                     if(event.key.keysym.sym == SDLK_SPACE) {//start again
                         game_over = false;
+                        leaderboard = false;
                         first_loop = true;
                     }
                     if(event.key.keysym.sym == SDLK_m) {//returns to main menu
                         game_over = false;
+                        leaderboard = false;
                         main_menu = true;
                     }
+                    if(event.key.keysym.sym == SDLK_l) {//goes to leaderboard
+                        game_over = false;
+                        main_menu = false;
+                        leaderboard = true;
+                    }
                 }
+                
                 if(game_over == false) {//reset variables
                     score = 0;
                     x = 475;
                     y = 250;
-                    oby = -100;
-                    ob2y = 10000;
-                    first_time = true;
+                    oby = 700;
+                    ob2y = 900;
                     mode = 0;
                     wallLeftX = -800;
                     wallRightX = 800;
@@ -422,6 +467,11 @@ int main(int argc, char **argv)
                     wall_rect1_2.x = wallLeftX;
                     wall_rect2_2.x = wallRightX;
                 }
+            } else if(leaderboard == true) {
+                SDL_RenderClear(renderer);
+                SDL_Rect game_over_back3 = {0, 0, 1000, 700};
+                SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
+                SDL_RenderPresent(renderer);
             } else {//no menus currently running, start and run game
                 
                 source_rect_red.x += 10;
@@ -915,6 +965,11 @@ int main(int argc, char **argv)
                 if(game_over) {//game over, so store current attempts in an array
                     attempts++;
                     sprintf(array2, "%d", attempts);
+                    
+                    if(score > currentScore) {
+                        currentScore = score;
+                        sprintf(array3, "%d", currentScore);
+                    }
                 }
                 
                 SDL_Color textColor = {255, 255, 255};
