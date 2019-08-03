@@ -24,7 +24,7 @@ COSC345 Group Project Otago University 2019
 
 Ben Highsted (5536340), Matthew Neil (7388248), Jasmine Hindson (8148181)
 
-We are creating a game called 'Dungeon Game' (name to be changed) programmed in C, using the SDL2 library (https://www.libsdl.org/download-2.0.php).
+We are creating a game called 'Dungeon Fall' programmed in C, using the SDL2 library (https://www.libsdl.org/download-2.0.php).
 
 We created our file in Xcode, so to build and run our program you will need to use the XCode project file and then download a couple SDL Library files and place them in specific locations on your PC. These instructions are currently only valid for MACOS operating systems.
 
