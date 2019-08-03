@@ -3,7 +3,7 @@
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Tue Jul 16 15:55:24 NZST 2019
+ * Last Edited: Fri Aug 02 16:02:35 NZST 2019
  *
  */
 
@@ -18,6 +18,7 @@
 #include "SDL2_mixer/SDL_mixer.h"
 
 #define TICK_INTERVAL 15
+#define MAXCHAR 1000
 
 static const int width = 1000;//width and height of the window
 static const int height = 700;
@@ -52,20 +53,16 @@ int main(int argc, char **argv)
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Music *music = NULL;
     
-    Mix_Chunk *fireball = NULL;//loading in the fireball sound effect
-    fireball = Mix_LoadWAV("fireball.mp3");
+    //Mix_Chunk *fireball = NULL;//loading in the fireball sound effect
+    //fireball = Mix_LoadWAV("fireball.mp3");
     
-    //find music, use this to load it in!
-    //Load the music
-    //music = Mix_LoadMUS("");
+    music = Mix_LoadMUS("content/dungeonMusic.mp3");//Non copyrighted music from https://www.youtube.com/watch?v=6Lm4yer6KxE
+    if(music == NULL)
+    {
+        return false;
+    }
     
-    //If there was a problem loading the music
-    //if(music == NULL)
-    //{
-    //    return false;
-    //}
-    
-    //Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(music, -1);
     
     SDL_Init(SDL_INIT_VIDEO);//Initialize SDL and creates a window/renderer
     SDL_Window *window = SDL_CreateWindow("Dungeon Fall", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
@@ -102,11 +99,12 @@ int main(int argc, char **argv)
     bool character_description = false, main_menu_screen = true;
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true;
-    bool addGameOver = true, leaderboard = false;
+    bool addGameOver = true, leaderboard = false, reading_first_time = true;
     
     char *array = (char *) malloc(64);
     char *array2 = (char *) malloc(64);
     char *array3 = (char *) malloc(64);
+    char *array4 = (char *) malloc(64);
     
     /** Rectangle Declarations **/
     SDL_Rect wall_rect = {-800, 0, 1000, 700};
@@ -134,53 +132,53 @@ int main(int argc, char **argv)
     SDL_Event event;//starts SDL event
     
     //Background and wall textures
-    SDL_Surface *image = IMG_Load("bricks.png");//From: https://www.deviantart.com/skazdal/art/Rock-bricks-texture-670434391
+    SDL_Surface *image = IMG_Load("content/bricks.png");//From: https://www.deviantart.com/skazdal/art/Rock-bricks-texture-670434391
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
-    SDL_Surface *background = IMG_Load("bricksBackground.png");//From: http://pixelartmaker.com/art/31b17490e7ef5d8
+    SDL_Surface *background = IMG_Load("content/bricksBackground.png");//From: http://pixelartmaker.com/art/31b17490e7ef5d8
     SDL_Texture *backTexture = SDL_CreateTextureFromSurface(renderer, background);
     //Border and Sprite textures
-    SDL_Surface *borderSurface = IMG_Load("border.png");//Following images created by Jasmine Hindson
+    SDL_Surface *borderSurface = IMG_Load("content/border.png");//Following images created by Jasmine Hindson
     SDL_Texture *border = SDL_CreateTextureFromSurface(renderer, borderSurface);
-    SDL_Surface *spriteStraightTexture = IMG_Load("sprite1straight.png");
+    SDL_Surface *spriteStraightTexture = IMG_Load("content/sprite1straight.png");
     SDL_Texture *sprite1StraightTexture = SDL_CreateTextureFromSurface(renderer, spriteStraightTexture);
-    SDL_Surface *sprite2Straight = IMG_Load("sprite2straight.png");
+    SDL_Surface *sprite2Straight = IMG_Load("content/sprite2straight.png");
     SDL_Texture *sprite2StraightTexture = SDL_CreateTextureFromSurface(renderer, sprite2Straight);
-    SDL_Surface *sprite3Straight = IMG_Load("sprite3straight.png");
+    SDL_Surface *sprite3Straight = IMG_Load("content/sprite3straight.png");
     SDL_Texture *sprite3StraightTexture = SDL_CreateTextureFromSurface(renderer, sprite3Straight);
-    SDL_Surface *spriteTexture = IMG_Load("sprite1falling.png");
+    SDL_Surface *spriteTexture = IMG_Load("content/sprite1falling.png");
     SDL_Texture *sprite1FallingTexture = SDL_CreateTextureFromSurface(renderer, spriteTexture);
-    SDL_Surface *sprite2Falling = IMG_Load("sprite2falling.png");
+    SDL_Surface *sprite2Falling = IMG_Load("content/sprite2falling.png");
     SDL_Texture *sprite2FallingTexture = SDL_CreateTextureFromSurface(renderer, sprite2Falling);
-    SDL_Surface *sprite3Falling = IMG_Load("Sprite3falling.png");
+    SDL_Surface *sprite3Falling = IMG_Load("content/Sprite3falling.png");
     SDL_Texture *sprite3FallingTexture = SDL_CreateTextureFromSurface(renderer, sprite3Falling);
     //Fireball/Object textures
-    SDL_Surface *fireRed = IMG_Load("fire-red.png");//Following images from https://stealthix.itch.io/animated-fires
+    SDL_Surface *fireRed = IMG_Load("content/fire-red.png");//Following images from https://stealthix.itch.io/animated-fires
     SDL_Texture *fireRedTexture = SDL_CreateTextureFromSurface(renderer, fireRed);
-    SDL_Surface *fireBlue = IMG_Load("fire-blue.png");
+    SDL_Surface *fireBlue = IMG_Load("content/fire-blue.png");
     SDL_Texture *fireBlueTexture = SDL_CreateTextureFromSurface(renderer, fireBlue);
-    SDL_Surface *fireGreen = IMG_Load("fire-green.png");
+    SDL_Surface *fireGreen = IMG_Load("content/fire-green.png");
     SDL_Texture *fireGreenTexture = SDL_CreateTextureFromSurface(renderer, fireGreen);
     //Other
     SDL_Surface *surfaceMessage;
     SDL_Surface *surfaceMessage2;
     SDL_Texture *Message;
     SDL_Texture *Message2;
-    SDL_Surface *image1_description = IMG_Load("andrew-description.png");
+    SDL_Surface *image1_description = IMG_Load("content/andrew-description.png");
     SDL_Texture *description_texture1 = SDL_CreateTextureFromSurface(renderer, image1_description);
-    SDL_Surface *image2_description = IMG_Load("bunny-description.png");
+    SDL_Surface *image2_description = IMG_Load("content/bunny-description.png");
     SDL_Texture *description_texture2 = SDL_CreateTextureFromSurface(renderer, image2_description);
-    SDL_Surface *image3_description = IMG_Load("matthew-description.png");
+    SDL_Surface *image3_description = IMG_Load("content/matthew-description.png");
     SDL_Texture *description_texture3 = SDL_CreateTextureFromSurface(renderer, image3_description);
     SDL_Rect description_image = {5, 250, 990, 250};
     
     //game over screen
-    SDL_Surface *leaderTitleSurface = IMG_Load("titleLeaderboard.png");
-    SDL_Surface *gameOverTitleSurface = IMG_Load("titleGameOver.png");
-    SDL_Surface *menuTitleSurface = IMG_Load("titleMenu.png");
-    SDL_Surface *tryAgainTitleSurface = IMG_Load("titleTryAgain.png");
-    SDL_Surface *attemptMessageSurface = IMG_Load("messageAttempt.png");
-    SDL_Surface *scoreMessageSurface = IMG_Load("messageScore.png");
-    SDL_Surface *highScoreMessageSurface = IMG_Load("messageHighScore.png");
+    SDL_Surface *leaderTitleSurface = IMG_Load("content/titleLeaderboard.png");
+    SDL_Surface *gameOverTitleSurface = IMG_Load("content/titleGameOver.png");
+    SDL_Surface *menuTitleSurface = IMG_Load("content/titleMenu.png");
+    SDL_Surface *tryAgainTitleSurface = IMG_Load("content/titleTryAgain.png");
+    SDL_Surface *attemptMessageSurface = IMG_Load("content/messageAttempt.png");
+    SDL_Surface *scoreMessageSurface = IMG_Load("content/messageScore.png");
+    SDL_Surface *highScoreMessageSurface = IMG_Load("content/messageHighScore.png");
     SDL_Texture *leaderTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderTitleSurface);
     SDL_Texture *gameOverTitleTexture = SDL_CreateTextureFromSurface(renderer, gameOverTitleSurface);
     SDL_Texture *menuTitleTexture = SDL_CreateTextureFromSurface(renderer, menuTitleSurface);
@@ -190,10 +188,16 @@ int main(int argc, char **argv)
     SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
     
     //main menu screen
-    SDL_Surface *mainMenuTitleSurface = IMG_Load("menuTitle.png");
+    SDL_Surface *mainMenuTitleSurface = IMG_Load("content/menuTitle.png");
     SDL_Texture *mainMenuTitleTexture = SDL_CreateTextureFromSurface(renderer, mainMenuTitleSurface);
-    SDL_Surface *mainMenuStartSurface = IMG_Load("menuStart.png");
+    SDL_Surface *mainMenuStartSurface = IMG_Load("content/menuStart.png");
     SDL_Texture *mainMenuStartTexture = SDL_CreateTextureFromSurface(renderer, mainMenuStartSurface);
+    SDL_Surface *pressBackspace = IMG_Load("content/pressBackspace.png");
+    SDL_Texture *pressBackspaceTexture = SDL_CreateTextureFromSurface(renderer, pressBackspace);
+    SDL_Surface *pressEnter = IMG_Load("content/pressEnter.png");
+    SDL_Texture *pressEnterTexture = SDL_CreateTextureFromSurface(renderer, pressEnter);
+    SDL_Surface *selectCharacter = IMG_Load("content/selectCharacter.png");
+    SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
 
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
@@ -205,20 +209,18 @@ int main(int argc, char **argv)
         if(main_menu == true){//if the game state is in the main menu
             if(character_description == true) {//if the user presses enter on a character
                 SDL_RenderClear(renderer);
-                SDL_Color textColor = {255, 255, 255};
                 
                 SDL_Rect nameRect = {300, 280, 370, 50};//basic rectangles
                 SDL_Rect infoRect = {370, 550, 200, 30};
                 SDL_Texture *sprite = NULL, *nameTexture = NULL;
-                SDL_Surface *nameSurface = NULL, *infoSurface = TTF_RenderText_Solid(font, "Press backspace", textColor);
+                SDL_Surface *nameSurface = NULL;
                 
-                SDL_Texture* infoTexture = SDL_CreateTextureFromSurface(renderer, infoSurface);
                 //decides which text and sprite needs to be displayed, then displays it.
                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copies all the textures into the renderer
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                 SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
                 SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
-                SDL_RenderCopy(renderer, infoTexture, NULL, &infoRect);
+                SDL_RenderCopy(renderer, pressBackspaceTexture, NULL, &infoRect);
                 if (sprite1 == true) {
                     sprite = sprite1StraightTexture;
                     SDL_RenderCopy(renderer, description_texture1, NULL, &description_image);
@@ -233,8 +235,6 @@ int main(int argc, char **argv)
                 SDL_RenderPresent(renderer);
                 
                 destroyAndFree(nameSurface, nameTexture);
-                destroyAndFree(infoSurface, infoTexture);
-                
                 
             } else if (main_menu_screen == true) {//standard main menu screen
                 counterAdd = 45;
@@ -262,7 +262,6 @@ int main(int argc, char **argv)
                 SDL_Rect falling_rect = {fallx, fally, 100, 100};//falling character
                 SDL_Rect border_rect = {position, 355, 160, 160};//border around current sprite
                 
-                SDL_Color textColor = {255, 255, 255};
                 SDL_RenderClear(renderer);
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
@@ -310,22 +309,11 @@ int main(int argc, char **argv)
                     sprite3 = true;
                 }
                 
-                SDL_Surface* mainMessage = TTF_RenderText_Solid(font, "Press space bar to start!", textColor);
-                SDL_Texture* mainMessage2 = SDL_CreateTextureFromSurface(renderer, mainMessage);
-                SDL_Surface* pickMessage = TTF_RenderText_Solid(font, "Select a character:", textColor);
-                SDL_Texture* pickMessage2 = SDL_CreateTextureFromSurface(renderer, pickMessage);
-                SDL_Surface* enterSurface = TTF_RenderText_Solid(font, "Press enter to see info", textColor);
-                SDL_Texture* enterTexture = SDL_CreateTextureFromSurface(renderer, enterSurface);
-                
-                SDL_RenderCopy(renderer, pickMessage2, NULL, &pick_rect);
+                SDL_RenderCopy(renderer, selectCharacterTexture, NULL, &pick_rect);
                 SDL_RenderCopy(renderer, mainMenuStartTexture, NULL, &MainMenu_rect);
-                SDL_RenderCopy(renderer, enterTexture, NULL, &enter_rect);
+                SDL_RenderCopy(renderer, pressEnterTexture, NULL, &enter_rect);
                 
                 SDL_RenderPresent(renderer);//draws the menu
-                
-                destroyAndFree(pickMessage, pickMessage2);
-                destroyAndFree(mainMessage, mainMessage2);
-                destroyAndFree(enterSurface, enterTexture);
             }
 
             
@@ -463,10 +451,45 @@ int main(int argc, char **argv)
                     wall_rect2_2.x = wallRightX;
                 }
             } else if(leaderboard == true) {
-                SDL_RenderClear(renderer);
-                SDL_Rect game_over_back3 = {0, 0, 1000, 700};
-                SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
-                SDL_RenderPresent(renderer);
+                SDL_Color textColor = {255, 255, 255};
+                if(reading_first_time) {
+                    reading_first_time = false;
+                    SDL_RenderClear(renderer);
+                    SDL_Surface* scoreListSurface = NULL;
+                    SDL_Texture* scoreListTexture = NULL;
+                    SDL_Rect game_over_back3 = {0, 0, 1000, 700};
+                    int positionY = 200;
+                    SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
+                    
+                    FILE *fp;
+                    char str[MAXCHAR];
+                    char* filename = "score.txt";
+                    fp = fopen(filename, "r");
+                    if (fp == NULL) {
+                        printf("Could not open file %s",filename);
+                    }
+                    while (fgets(str, MAXCHAR, fp) != NULL) {
+                        SDL_Rect score_rect = {350, positionY, 300, 50};
+                        printf("%s", str);
+                        array4 = str;
+                        scoreListSurface = TTF_RenderText_Solid(font, array4, textColor);
+                        scoreListTexture = SDL_CreateTextureFromSurface(renderer, scoreListSurface);
+                        SDL_RenderCopy(renderer, scoreListTexture, NULL, &score_rect);
+                        positionY += 75;
+                    }
+                    fclose(fp);
+                    SDL_RenderPresent(renderer);
+                    destroyAndFree(scoreListSurface, scoreListTexture);
+                }
+                
+                while(SDL_PollEvent(&event)) {
+                    if(event.key.keysym.sym == SDLK_BACKSPACE) {//start again
+                        game_over = true;
+                        leaderboard = false;
+                        main_menu = false;
+                        reading_first_time = true;
+                    }
+                }
             } else {//no menus currently running, start and run game
                 
                 source_rect_red.x += 10;
@@ -789,7 +812,7 @@ int main(int argc, char **argv)
                     } else {
                         if(oby <= -50 && ob2y <= -50) {
                             mode = 1;
-                            oby = 600;
+                            oby = 700;
                             ob2y = 900;
                             setup = true;
                             switchModes = false;
