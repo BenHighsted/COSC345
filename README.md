@@ -2,14 +2,6 @@
 
 List of changes before Beta release:
 
--Create images for the text? Definitley for the title, maybe for other parts? Could actually shorten the amount of lines!!
-
--Fix up collision detection
-
--Add music.
-
--Make random generation with fireballs and walls actually random (currently they are the artificial random). (Not sure if this is nessasary at this point)
-
 -Change walls a bit to make it a more interesting stage. Thinking rather than just moving in the walls randomly, we should have a set of pre-determined stages which it randomly selects on of.
 
 -Fix instructions on how to set up librarys.
