@@ -1,10 +1,8 @@
 /**
- *
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Mon Aug 05 13:08:13 NZST 2019
- *
+ * Last Edited: Mon Aug 05 14:21:07 NZST 2019
  */
 #include <stdio.h>//standard includes
 #include <stdlib.h>
@@ -18,8 +16,7 @@
 #define TICK_INTERVAL 15
 #define MAXCHAR 1000
 
-static const int width = 1000;//width and height of the window
-static const int height = 700;
+static const int width = 1000, height = 700;//width and height of the window
 static Uint32 next_time;
 /** Method works out how much time is left and determines how much to slow down for the current PC
  *  https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidetimeexamples.html
@@ -46,28 +43,22 @@ void destroyAndFree (SDL_Surface* surface, SDL_Texture* texture)
 int main(int argc, char **argv)
 {
     next_time = SDL_GetTicks() + TICK_INTERVAL;//determines how fast the program should run
-    
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Music *music = NULL;
-    
     //Mix_Chunk *fireball = NULL;//loading in the fireball sound effect
     //fireball = Mix_LoadWAV("content/fireball.mp3");
-    
     music = Mix_LoadMUS("content/dungeonMusic.mp3");//Non copyrighted music from https://www.youtube.com/watch?v=6Lm4yer6KxE
     if(music == NULL)
     {
         return false;
     }
-    
     Mix_PlayMusic(music, -1);
     
     SDL_Init(SDL_INIT_VIDEO);//Initialize SDL and creates a window/renderer
     SDL_Window *window = SDL_CreateWindow("Dungeon Fall", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    
     TTF_Init();
     IMG_Init(IMG_INIT_JPG);//Image initialisation code
-    
     TTF_Font *font = NULL, *font2 = NULL;//creates font variables and assigns them to fonts out of /Library/Fonts.
     font = TTF_OpenFont("/Library/Fonts/Georgia.ttf", 100);//Only works for MACOS currently.
     font2 = TTF_OpenFont("/Library/Fonts/Arial.ttf", 100);
@@ -75,18 +66,15 @@ int main(int argc, char **argv)
         printf("Failed to find font");
         return false;
     }
-    
     /** Variable Declarations **/
     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250;
     int startx = 300, starty = 600, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
     int mode = 0, pos = 0, position = 185;
     int startyGameOver = 560, currentScore = 0;
-    
+    int speed = 4, oby = -100, ob2y = 10000000;
     float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0, menuCounterGameOver = 0;
     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0;
     float fireObjectsX[] = {(rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200};
-    int speed = 4, oby = -100, ob2y = 10000000;
-    
     bool add = true, fall = false, first_loop = false, running = true;
     bool setup = true, switchModes = false, complete = false;
     bool move_left = false, move_right = false, move_up = false, move_down = false;
@@ -95,10 +83,7 @@ int main(int argc, char **argv)
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true, first_game_over = true;;
     bool addGameOver = true, leaderboard = false, reading_first_time = true;
-    
     char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(64), *array4 = (char *) malloc(64);
-    
-    
     /** Rectangle Declarations **/
     SDL_Rect wall_rect = {-800, 0, 1000, 700};
     SDL_Rect wall_rect2 = wall_rect;
@@ -115,7 +100,7 @@ int main(int argc, char **argv)
     SDL_Rect background_rect = {0, 0, 1000, 710};
     SDL_Rect background_rect2 = {0, 710, 1000, 710};
     SDL_Rect sprite1_rect = {200, 370, 130, 130};
-    SDL_Rect sprite_rect2 = {350, 50, 220, 220};
+    SDL_Rect sprite_rect2 = {375, 50, 220, 220};
     SDL_Rect sprite2_rect = {400, 370, 130, 130};
     SDL_Rect sprite3_rect = {600, 370, 130, 130};
     SDL_Rect source_rect_red = {0, 0, 10, 26};
