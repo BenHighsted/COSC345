@@ -3,7 +3,7 @@
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Fri Aug 02 16:02:35 NZST 2019
+ * Last Edited: Mon Aug 05 13:08:13 NZST 2019
  *
  */
 
@@ -198,6 +198,15 @@ int main(int argc, char **argv)
     SDL_Texture *pressEnterTexture = SDL_CreateTextureFromSurface(renderer, pressEnter);
     SDL_Surface *selectCharacter = IMG_Load("content/selectCharacter.png");
     SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
+    //leaderboard stuff
+    char delim[] = " ";
+    char delim2[] = "\n";
+    char *ptr = (char *) malloc(64);
+    char *username = "You";
+    FILE *fp;
+    char str[MAXCHAR];
+    char* filename = "content/score.txt";
+    bool first_game_over = true;
 
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
@@ -435,7 +444,30 @@ int main(int argc, char **argv)
                     }
                 }
                 
-                if(game_over == false) {//reset variables
+                if(first_game_over) {
+                    first_game_over = false;
+                    fp = fopen(filename, "r+");
+                    if (fp == NULL) {
+                        printf("Could not open file %s",filename);
+                    }
+                    while (fgets(str, MAXCHAR, fp) != NULL) {
+                        array4 = strtok(str, delim2);
+                        ptr = strtok(str, delim);
+                        while (ptr != NULL)
+                        {
+                            ptr = strtok(NULL, delim);
+                            if(ptr != NULL) {
+                                int x = atoi(ptr);
+                                if(currentScore > x) {
+                                    fprintf(fp,"\n%s %d", username, currentScore);
+                                }
+                            }
+                        }
+                    }
+                    fclose(fp);
+                }
+                
+                if(game_over == false && leaderboard == false) {//reset variables
                     score = 0;
                     x = 475;
                     y = 250;
@@ -449,6 +481,7 @@ int main(int argc, char **argv)
                     wall_rect2.x = wallRightX;
                     wall_rect1_2.x = wallLeftX;
                     wall_rect2_2.x = wallRightX;
+                    first_game_over = true;
                 }
             } else if(leaderboard == true) {
                 SDL_Color textColor = {255, 255, 255};
@@ -461,9 +494,6 @@ int main(int argc, char **argv)
                     int positionY = 200;
                     SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
                     
-                    FILE *fp;
-                    char str[MAXCHAR];
-                    char* filename = "score.txt";
                     fp = fopen(filename, "r");
                     if (fp == NULL) {
                         printf("Could not open file %s",filename);
@@ -471,7 +501,7 @@ int main(int argc, char **argv)
                     while (fgets(str, MAXCHAR, fp) != NULL) {
                         SDL_Rect score_rect = {350, positionY, 300, 50};
                         printf("%s", str);
-                        array4 = str;
+                        array4 = strtok(str, delim2);
                         scoreListSurface = TTF_RenderText_Solid(font, array4, textColor);
                         scoreListTexture = SDL_CreateTextureFromSurface(renderer, scoreListSurface);
                         SDL_RenderCopy(renderer, scoreListTexture, NULL, &score_rect);
@@ -481,6 +511,7 @@ int main(int argc, char **argv)
                     SDL_RenderPresent(renderer);
                     destroyAndFree(scoreListSurface, scoreListTexture);
                 }
+
                 
                 while(SDL_PollEvent(&event)) {
                     if(event.key.keysym.sym == SDLK_BACKSPACE) {//start again
