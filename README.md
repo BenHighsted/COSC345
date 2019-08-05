@@ -10,6 +10,23 @@ List of changes before Beta release:
 
 -Update Documentation
 
+# List of changes made so far:
+-Animated fireballs
+
+-Added music
+
+-Updated text boxes
+
+-Added leaderboard (Still in progress)
+
+-Made code more effecient
+
+-Fixed fireball overlap
+
+-Made fireball collision detection less punishing
+
+-And more
+
 # DUNGEON FALL
 
 COSC345 Group Project Otago University 2019
