@@ -2,7 +2,7 @@
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Mon Aug 05 14:21:07 NZST 2019
+ * Last Edited: Tue Aug 06 16:02:12 NZST 2019
  */
 #include <stdio.h>//standard includes
 #include <stdlib.h>
@@ -17,6 +17,9 @@
 #define MAXCHAR 1000
 
 static const int width = 1000, height = 700;//width and height of the window
+
+//Flashing animation
+const int FLASH_ANIMATION_FRAMES = 4;
 static Uint32 next_time;
 /** Method works out how much time is left and determines how much to slow down for the current PC
  *  https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidetimeexamples.html
@@ -81,7 +84,7 @@ int main(int argc, char **argv)
     bool main_menu = true, game_over = false, rightmove = false;
     bool character_description = false, main_menu_screen = true;
     bool sprite1 = true, sprite2 = false, sprite3 = false;
-    bool first_time = true, first_game_over = true;;
+    bool first_time = true, first_game_over = true, showHighScore = false;
     bool addGameOver = true, leaderboard = false, reading_first_time = true;
     char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(64), *array4 = (char *) malloc(64);
     /** Rectangle Declarations **/
@@ -106,6 +109,7 @@ int main(int argc, char **argv)
     SDL_Rect source_rect_red = {0, 0, 10, 26};
     SDL_Rect source_rect_blue = {0, 0, 9, 24};
     SDL_Rect source_rect_green = {0, 0, 9, 25};
+    SDL_Rect gFlashClips[FLASH_ANIMATION_FRAMES];
     SDL_Event event;//starts SDL event
     //Background and wall textures
     SDL_Surface *image = IMG_Load("content/bricks.png");//From: https://www.deviantart.com/skazdal/art/Rock-bricks-texture-670434391
@@ -154,6 +158,7 @@ int main(int argc, char **argv)
     SDL_Surface *attemptMessageSurface = IMG_Load("content/messageAttempt.png");
     SDL_Surface *scoreMessageSurface = IMG_Load("content/messageScore.png");
     SDL_Surface *highScoreMessageSurface = IMG_Load("content/messageHighScore.png");
+    SDL_Surface *newHighscoreSurface = IMG_Load("content/newHighScore.png");
     SDL_Texture *leaderTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderTitleSurface);
     SDL_Texture *gameOverTitleTexture = SDL_CreateTextureFromSurface(renderer, gameOverTitleSurface);
     SDL_Texture *menuTitleTexture = SDL_CreateTextureFromSurface(renderer, menuTitleSurface);
@@ -161,6 +166,27 @@ int main(int argc, char **argv)
     SDL_Texture *attemptMessageTexture = SDL_CreateTextureFromSurface(renderer, attemptMessageSurface);
     SDL_Texture *scoreMessageTexture = SDL_CreateTextureFromSurface(renderer, scoreMessageSurface);
     SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
+    SDL_Texture *newHighscoreTexture = SDL_CreateTextureFromSurface(renderer, newHighscoreSurface);
+    
+    //Set sprite clips
+    gFlashClips[0].x = 268;
+    gFlashClips[0].y = 61;
+    gFlashClips[0].w = 350;
+    gFlashClips[0].h = 250;
+    gFlashClips[1].x = 268;
+    gFlashClips[1].y = 267;
+    gFlashClips[1].w = 350;
+    gFlashClips[1].h = 250;
+    gFlashClips[2].x = 268;
+    gFlashClips[2].y = 474;
+    gFlashClips[2].w = 350;
+    gFlashClips[2].h = 250;
+    gFlashClips[3].x = 268;
+    gFlashClips[3].y = 684;
+    gFlashClips[3].w = 350;
+    gFlashClips[3].h = 250;
+    int frame = 0;
+    
     //main menu screen
     SDL_Surface *mainMenuTitleSurface = IMG_Load("content/menuTitle.png");
     SDL_Texture *mainMenuTitleTexture = SDL_CreateTextureFromSurface(renderer, mainMenuTitleSurface);
@@ -173,14 +199,13 @@ int main(int argc, char **argv)
     SDL_Surface *selectCharacter = IMG_Load("content/selectCharacter.png");
     SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
     //leaderboard stuff
-    char delim[] = " ", delim2[] = "\n", str[MAXCHAR];
-    char *ptr = (char *) malloc(64), *username = "You";
-    FILE *fp;
-    char* filename = "content/score.txt";
+    char delim[] = " ", delim2[] = "\n", *ptr = (char *) malloc(64), *username = "You";
+    char str[MAXCHAR], *filename = "content/score.txt";
+    FILE *fp, *fp2;
     SDL_Surface *leaderboardTitleSurface = IMG_Load("content/leaderboardTitle.png");
     SDL_Texture *leaderboardTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderboardTitleSurface);
     SDL_Rect leaderboardTitleRect = {150, 20, 700, 150};
-
+    
     while(running){
         SDL_Delay(time_left());//used to run at the same speed on every device
         next_time += TICK_INTERVAL;
@@ -320,6 +345,7 @@ int main(int argc, char **argv)
                 SDL_Rect attemptsRect = {590, 165, 25, 50};
                 SDL_Rect highscoreRect = {560, 300, 50, 30};
                 SDL_Rect scoreRect = {530, 240, 50, 30};
+                SDL_Rect* currentClip = &gFlashClips[frame/4];
                 sprintf(array, "%d", score);//gets current score
                 move_left = false;
                 move_right = false;
@@ -342,7 +368,55 @@ int main(int argc, char **argv)
                         menuCounterGameOver = 0;
                     }
                 }
+                
                 SDL_RenderClear(renderer);
+                
+                if(first_game_over) {
+                    first_game_over = false;
+                    bool been_here = false;
+                    int temp = 0;
+                    fp = fopen(filename, "r");
+                    fp2 = fopen("content/replica.c", "w");
+                    if (fp == NULL) {
+                        printf("Could not open file %s",filename);
+                    }
+                    while (fgets(str, MAXCHAR, fp) != NULL) {
+                        array4 = strtok(str, delim2);
+                        while (array4 != NULL) {
+                            ptr = strtok(array4, delim);
+                            if(ptr != NULL) {
+                                ptr = strtok(NULL, delim);
+                                int x = atoi(ptr);
+                                if(score < x) {
+                                    fprintf(fp2, "%s %s\n", array4, ptr);
+                                    temp++;
+                                } else {
+                                    if(been_here == false) {
+                                        fprintf(fp2, "%s %d\n", username, currentScore);
+                                        temp++;
+                                        if(temp != 5) {
+                                            fprintf(fp2, "%s %s\n", array4, ptr);
+                                            temp++;
+                                        }
+                                        been_here = true;
+                                    } else {
+                                        if(temp != 5) {
+                                            fprintf(fp2, "%s %s\n", array4, ptr);
+                                            temp++;
+                                        }
+                                    }
+                                    showHighScore = true;
+                                }
+                            }
+                            array4 = strtok(NULL, delim2);
+                        }
+                    }
+                    fclose(fp2);
+                    fclose(fp);
+                    remove(filename);
+                    rename("content/replica.c", filename);
+                }
+                
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
                 SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
                 SDL_Texture* attemptCountTexture = SDL_CreateTextureFromSurface(renderer, attemptCountSurface);
@@ -360,10 +434,20 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, highScoreTexture, NULL, &highscoreRect);
                 SDL_RenderCopy(renderer, attemptCountTexture, NULL, &attemptsRect);
                 SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
+                if(showHighScore == true) {
+                    SDL_RenderCopy(renderer, newHighscoreTexture, NULL, currentClip);
+                }
                 SDL_RenderPresent(renderer);
+                //Go to next frame
+                ++frame;
+                //Cycle animation
+                if(frame / 4 >= FLASH_ANIMATION_FRAMES) {
+                    frame = 0;
+                }
                 destroyAndFree(highScoreSurface, highScoreTexture);
                 destroyAndFree(attemptCountSurface, attemptCountTexture);
                 destroyAndFree(scoreSurface, scoreTexture);
+                
                 while(SDL_PollEvent(&event)) {
                     if(event.key.keysym.sym == SDLK_SPACE) {//start again
                         game_over = false;
@@ -380,28 +464,6 @@ int main(int argc, char **argv)
                         main_menu = false;
                         leaderboard = true;
                     }
-                }
-                if(first_game_over) {
-                    first_game_over = false;
-                    fp = fopen(filename, "r+");
-                    if (fp == NULL) {
-                        printf("Could not open file %s",filename);
-                    }
-                    while (fgets(str, MAXCHAR, fp) != NULL) {
-                        array4 = strtok(str, delim2);
-                        ptr = strtok(str, delim);
-                        while (ptr != NULL)
-                        {
-                            ptr = strtok(NULL, delim);
-                            if(ptr != NULL) {
-                                int x = atoi(ptr);
-                                if(currentScore > x) {
-                                    fprintf(fp,"\n%s %d", username, currentScore);
-                                }
-                            }
-                        }
-                    }
-                    fclose(fp);
                 }
                 if(game_over == false && leaderboard == false) {//reset variables
                     score = 0;
@@ -423,6 +485,7 @@ int main(int argc, char **argv)
                 SDL_Color textColor = {255, 255, 255};
                 if(reading_first_time) {
                     reading_first_time = false;
+                    char first_char;
                     SDL_RenderClear(renderer);
                     SDL_Surface* scoreListSurface = NULL;
                     SDL_Texture* scoreListTexture = NULL;
@@ -437,8 +500,12 @@ int main(int argc, char **argv)
                     }
                     while (fgets(str, MAXCHAR, fp) != NULL) {
                         SDL_Rect score_rect = {350, positionY, 300, 50};
-                        printf("%s", str);
                         array4 = strtok(str, delim2);
+                        first_char = array4[0];
+                        if(first_char == 'Y') {
+                            score_rect.x = 400;
+                            score_rect.w = 200;
+                        }
                         scoreListSurface = TTF_RenderText_Solid(font, array4, textColor);
                         scoreListTexture = SDL_CreateTextureFromSurface(renderer, scoreListSurface);
                         SDL_RenderCopy(renderer, scoreListTexture, NULL, &score_rect);
@@ -613,9 +680,11 @@ int main(int argc, char **argv)
                 }
                 if(x < wallLeftX + 1000 || x > wallRightX - 80) {//detects if a player has hit a wall
                     game_over = true;
+                    showHighScore = false;
                 }
                 if(y > 700 || y < 0) {//detects if a player goes to high or low
                     game_over = true;
+                    showHighScore = false;
                 }
                 //moves the background
                 if(counter >= 100) {
@@ -692,10 +761,12 @@ int main(int argc, char **argv)
                                 if(i < 3){
                                     if(oby + 50 >= y && oby <= y + 50) {
                                         game_over = true;
+                                        showHighScore = false;
                                     }
                                 } else {
                                     if(ob2y + 50 >= y && ob2y <= y + 50) {
                                         game_over = true;
+                                        showHighScore = false;
                                     }
                                 }
                             }
