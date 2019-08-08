@@ -18,8 +18,6 @@
 
 static const int width = 1000, height = 700;//width and height of the window
 
-//Flashing animation
-const int FLASH_ANIMATION_FRAMES = 4;
 static Uint32 next_time;
 /** Method works out how much time is left and determines how much to slow down for the current PC
  *  https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidetimeexamples.html
@@ -77,6 +75,7 @@ int main(int argc, char **argv)
     int speed = 4, oby = -100, ob2y = 10000000;
     float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0, menuCounterGameOver = 0;
     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0;
+    float count = 0, count2 = 100;
     float fireObjectsX[] = {(rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200};
     bool add = true, fall = false, first_loop = false, running = true;
     bool setup = true, switchModes = false, complete = false;
@@ -109,7 +108,7 @@ int main(int argc, char **argv)
     SDL_Rect source_rect_red = {0, 0, 10, 26};
     SDL_Rect source_rect_blue = {0, 0, 9, 24};
     SDL_Rect source_rect_green = {0, 0, 9, 25};
-    SDL_Rect gFlashClips[FLASH_ANIMATION_FRAMES];
+    SDL_Rect gFlashClips = {555, 210, 250, 150};
     SDL_Event event;//starts SDL event
     //Background and wall textures
     SDL_Surface *image = IMG_Load("content/bricks.png");//From: https://www.deviantart.com/skazdal/art/Rock-bricks-texture-670434391
@@ -167,25 +166,6 @@ int main(int argc, char **argv)
     SDL_Texture *scoreMessageTexture = SDL_CreateTextureFromSurface(renderer, scoreMessageSurface);
     SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
     SDL_Texture *newHighscoreTexture = SDL_CreateTextureFromSurface(renderer, newHighscoreSurface);
-    
-    //Set sprite clips
-    gFlashClips[0].x = 268;
-    gFlashClips[0].y = 61;
-    gFlashClips[0].w = 350;
-    gFlashClips[0].h = 250;
-    gFlashClips[1].x = 268;
-    gFlashClips[1].y = 267;
-    gFlashClips[1].w = 350;
-    gFlashClips[1].h = 250;
-    gFlashClips[2].x = 268;
-    gFlashClips[2].y = 474;
-    gFlashClips[2].w = 350;
-    gFlashClips[2].h = 250;
-    gFlashClips[3].x = 268;
-    gFlashClips[3].y = 684;
-    gFlashClips[3].w = 350;
-    gFlashClips[3].h = 250;
-    int frame = 0;
     
     //main menu screen
     SDL_Surface *mainMenuTitleSurface = IMG_Load("content/menuTitle.png");
@@ -345,7 +325,6 @@ int main(int argc, char **argv)
                 SDL_Rect attemptsRect = {590, 165, 25, 50};
                 SDL_Rect highscoreRect = {560, 300, 50, 30};
                 SDL_Rect scoreRect = {530, 240, 50, 30};
-                SDL_Rect* currentClip = &gFlashClips[frame/4];
                 sprintf(array, "%d", score);//gets current score
                 move_left = false;
                 move_right = false;
@@ -356,7 +335,7 @@ int main(int argc, char **argv)
                 }else if(startyGameOver == 530) {
                     addGameOver = true;
                 }
-                SDL_Rect tryAgainTitleRect = {startx, startyGameOver, 400, 400};
+                SDL_Rect tryAgainTitleRect = {startx-40, startyGameOver+40, 500, 70};
                 if(addGameOver){//animates the 'start' text
                     if(menuCounterGameOver == 4) {
                         startyGameOver += 1;
@@ -435,15 +414,19 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, attemptCountTexture, NULL, &attemptsRect);
                 SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
                 if(showHighScore == true) {
-                    SDL_RenderCopy(renderer, newHighscoreTexture, NULL, currentClip);
+                    if(count < 100) {
+                        SDL_RenderCopy(renderer, newHighscoreTexture, NULL, &gFlashClips);
+                        count+=2;
+                    } else {
+                        count2-= 2;
+                        if(count2 == 0){
+                            count = 0;
+                            count2 = 100;
+                        }
+                    }
                 }
                 SDL_RenderPresent(renderer);
-                //Go to next frame
-                ++frame;
-                //Cycle animation
-                if(frame / 4 >= FLASH_ANIMATION_FRAMES) {
-                    frame = 0;
-                }
+                
                 destroyAndFree(highScoreSurface, highScoreTexture);
                 destroyAndFree(attemptCountSurface, attemptCountTexture);
                 destroyAndFree(scoreSurface, scoreTexture);
