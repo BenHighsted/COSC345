@@ -2,7 +2,7 @@
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Tue Aug 06 16:02:12 NZST 2019
+ * Last Edited: Fri Aug 09 10:30:53 NZST 2019
  */
 #include <stdio.h>//standard includes
 #include <stdlib.h>
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
             if(character_description == true) {//if the user presses enter on a character
                 SDL_RenderClear(renderer);
                 SDL_Rect nameRect = {300, 280, 370, 50};//basic rectangles
-                SDL_Rect infoRect = {370, 550, 200, 30};
+                SDL_Rect infoRect = {400, 550, 200, 30};
                 SDL_Texture *sprite = NULL, *nameTexture = NULL;
                 SDL_Surface *nameSurface = NULL;
                 //decides which text and sprite needs to be displayed, then displays it.
@@ -390,10 +390,10 @@ int main(int argc, char **argv)
                             array4 = strtok(NULL, delim2);
                         }
                     }
-                    fclose(fp2);
-                    fclose(fp);
-                    remove(filename);
-                    rename("content/replica.c", filename);
+                    //fclose(fp2);
+                    //fclose(fp);
+                    //remove(filename);
+                    //rename("content/replica.c", filename);
                 }
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
@@ -495,6 +495,8 @@ int main(int argc, char **argv)
                         positionY += 75;
                     }
                     fclose(fp);
+                    SDL_Rect infoRect2 = {345, 580, 320, 50};
+                    SDL_RenderCopy(renderer, pressBackspaceTexture, NULL, &infoRect2);
                     SDL_RenderPresent(renderer);
                     destroyAndFree(scoreListSurface, scoreListTexture);
                 }
