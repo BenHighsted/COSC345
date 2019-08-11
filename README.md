@@ -18,8 +18,10 @@ For the Beta release, we removed the need to download/setup frameworks as that w
 
 To use Xcode to run the program, there are a couple folders you need to move to set it up to run.
 
-In Xcode on the left side of the screen, there is the products folder containing the executable. Right click on the executable (Called 'Assignment') and click on 'Show in finder'. This is where you need to copy the 'content' folder from the documents provided in the download. While in the finder window, right click at the top of the finder window which states the name (which will be debug), and go to the directory behind it called 'Products'. This is where you need to copy the 'Frameworks' folder in the provided documents.
-After these two steps, you are now ready to run the program in Xcode. (NEED TO ADD IMGUR LINKS).
+In Xcode on the left side of the screen, there is the products folder containing the executable. Right click on the executable (Called 'Assignment') and click on 'Show in finder'. This is where you need to copy the 'content' folder from the documents provided in the download. 
+While in the finder window, right click at the top of the finder window which states the name (which will be debug), and go to the directory behind it called 'Products'. This is where you need to copy the 'Frameworks' folder in the provided documents.
+After these two steps, you are now ready to run the program in Xcode. 
+Instructions with screenshots here: https://imgur.com/a/ZWZbpKC.
 
 Also provided in the download, is an executable which will run the program outside of Xcode. The only downside to this is that the leaderboard function will not work outside of running it through Xcode. 
 
