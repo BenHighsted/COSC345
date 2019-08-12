@@ -1,11 +1,3 @@
-# Before the Beta release, this will need to be updated to work as andrew said when we recieved the alpha back.
-
-List of changes before Beta release:
-
--Add a video showing the finished beta.
-
--Update Comments
-
 # DUNGEON FALL
 
 COSC345 Group Project Otago University 2019.
@@ -27,5 +19,5 @@ Also provided in the download, is an executable which will run the program outsi
 
 Here is a video showing our Alpha Release: https://www.youtube.com/watch?v=GJCgZItPklY.
 
-Here is a video showing our Beta Release:  
+Here is a video showing our Beta Release: https://www.youtube.com/watch?v=P9AjF5BYM0M.
 
