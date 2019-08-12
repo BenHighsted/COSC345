@@ -15,7 +15,7 @@ While in the finder window, right click at the top of the finder window which st
 After these two steps, you are now ready to run the program in Xcode. 
 Instructions with screenshots here: https://imgur.com/a/ZWZbpKC.
 
-Also provided in the download, is an executable which will run the program outside of Xcode. The only downside to this is that the leaderboard function will not work outside of running it through Xcode. You will need to go into system preferences ->security and select allow to run the executable.
+Also provided in the download, is an executable which will run the program outside of Xcode. The only downside to this is that the leaderboard function will not work outside of running it through Xcode, due to some permission errors when running it as the executable. You will need to go into system preferences ->security and select allow to run the executable.
 
 Here is a video showing our Alpha Release: https://www.youtube.com/watch?v=GJCgZItPklY.
 
