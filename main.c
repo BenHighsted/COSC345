@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     bool setup = true, switchModes = false, complete = false;
     bool move_left = false, move_right = false, move_up = false, move_down = false;
     bool main_menu = true, game_over = false, rightmove = false;
-    bool character_description = false, main_menu_screen = true;
+    bool character_description = false, main_menu_screen = false;
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true, first_game_over = true, showHighScore = false;
     bool addGameOver = true, leaderboard = false, reading_first_time = true;
@@ -194,6 +194,18 @@ int main(int argc, char **argv)
     SDL_Surface *instructionTextSurface = IMG_Load("content/keystomove.png");
     SDL_Texture *instructionTextTexture = SDL_CreateTextureFromSurface(renderer, instructionTextSurface);
     SDL_Rect instructionTextRect = {300, 350, 200, 150};
+    //main main menu screen stuff
+    int option = 0;
+    SDL_Rect mainMenuRect = {345, 340, 300, 260};
+    SDL_Surface *mainMenuOptionsSurface = IMG_Load("content/mainMenu.png");
+    SDL_Texture *mainMenuOptionsTexture = SDL_CreateTextureFromSurface(renderer, mainMenuOptionsSurface);
+    bool main_menu_test = true; //main_menu_screen needs to be false
+    SDL_Rect arrow = {200, 600, 50, 50};
+    SDL_Rect arrow2 = {600, 600, 50, 50};
+    SDL_Surface *blueArrowSurface = IMG_Load("content/arrow.png");
+    SDL_Texture *blueArrowTexture = SDL_CreateTextureFromSurface(renderer, blueArrowSurface);
+    SDL_Surface *blueArrowSurface2 = IMG_Load("content/arrow2.png");
+    SDL_Texture *blueArrowTexture2 = SDL_CreateTextureFromSurface(renderer, blueArrowSurface2);
     
     //setup complete, starts game loop
     while(running){
@@ -228,7 +240,46 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, sprite, NULL, &sprite_rect2);
                 SDL_RenderPresent(renderer);
                 destroyAndFree(nameSurface, nameTexture);
-            } else if (main_menu_screen == true) {//standard main menu screen
+            } else if (main_menu_test == true){
+                Title_rect.x = 150;
+                Title_rect.y = 2;
+                Title_rect.w = 700;
+                Title_rect.h = 300;
+                SDL_RenderClear(renderer);
+                SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
+                SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
+                SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
+                SDL_RenderCopy(renderer, mainMenuOptionsTexture, NULL, &mainMenuRect);
+                SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
+
+                if(option == 0){
+                    arrow.y = 350;
+                    arrow.x = 310;
+                    arrow2.y = 350;
+                    arrow2.x = 630;
+                    
+                } else if(option == 1){
+                    arrow.y = 410;
+                    arrow.x = 310;
+                    arrow2.y = 410;
+                    arrow2.x = 630;
+                } else if(option == 2){
+                    arrow.y = 480;
+                    arrow.x = 370;
+                    arrow2.y = 480;
+                    arrow2.x = 570;
+                } else if(option == 3){
+                    arrow.y = 535;
+                    arrow.x = 380;
+                    arrow2.y = 535;
+                    arrow2.x = 560;
+                }
+                SDL_RenderCopy(renderer, blueArrowTexture, NULL, &arrow);
+                SDL_RenderCopy(renderer, blueArrowTexture2, NULL, &arrow2);
+                
+                SDL_RenderPresent(renderer);//draws the menu
+
+            }else if (main_menu_screen == true) {//standard main menu screen
                 counterAdd = 45;
                 Title_rect.x = 150;
                 Title_rect.y = 2;
@@ -294,16 +345,25 @@ int main(int argc, char **argv)
                 SDL_RenderCopy(renderer, pressEnterTexture, NULL, &enter_rect);
                 SDL_RenderPresent(renderer);//draws the menu
             }
+            
             while(SDL_PollEvent(&event)) {
+                if(event.type == SDL_KEYDOWN){
                 if(event.key.keysym.sym == SDLK_SPACE){//start game
                     if(main_menu_screen == true) {
                         main_menu = false;
                         first_loop = true;
+                    } else if(main_menu_test == true){
+                        if(option == 0){
+                            main_menu_test = false;
+                            main_menu_screen = true;
+                        }
                     }
                 }
                 if(event.key.keysym.sym == SDLK_RETURN) {//look at current character
                     main_menu_screen = false;
-                    character_description = true;
+                    if(main_menu_test == false){
+                        character_description = true;
+                    }
                 }
                 if(event.key.keysym.sym == SDLK_BACKSPACE) {//return from current character
                     character_description = false;
@@ -319,6 +379,19 @@ int main(int argc, char **argv)
                         position -= 100;
                     }
                 }
+                if(event.key.keysym.sym == SDLK_UP) {
+                    option--;
+                    if(option == -1){
+                        option = 3;
+                    }
+                }
+                if(event.key.keysym.sym == SDLK_DOWN) {
+                    option++;
+                    if(option == 4){
+                        option = 0;
+                    }
+                }
+            }
             }
         }else{
             if(game_over == true){//if you lose
