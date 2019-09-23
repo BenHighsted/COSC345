@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true, first_game_over = true, showHighScore = false;
     bool addGameOver = true, leaderboard = false, reading_first_time = true;
-    char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(64), *array4 = (char *) malloc(64);
+    char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(100), *array4 = (char *) malloc(100);
     /** Rectangle Declarations **/
     SDL_Rect wall_rect = {-800, 0, 1000, 700};
     SDL_Rect wall_rect2 = wall_rect;
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
     SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
     //Leaderboard textures and text stuff
     char delim[] = " ", delim2[] = "\n", *ptr = (char *) malloc(64), *username = "You";
-    char str[MAXCHAR], *filename = "content/score.txt";
+    char str[MAXCHAR], *filename = "score.txt";
     FILE *fp, *fp2;
     SDL_Surface *leaderboardTitleSurface = IMG_Load("content/leaderboardTitle.png");
     SDL_Texture *leaderboardTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderboardTitleSurface);
@@ -257,7 +257,6 @@ int main(int argc, char **argv)
                     arrow.x = 310;
                     arrow2.y = 350;
                     arrow2.x = 630;
-                    
                 } else if(option == 1){
                     arrow.y = 410;
                     arrow.x = 310;
@@ -371,12 +370,12 @@ int main(int argc, char **argv)
                 }
                 if(event.key.keysym.sym == SDLK_RIGHT) {//move between characters
                     if(position != 585) {
-                        position += 100;
+                        position += 200;
                     }
                 }
                 if(event.key.keysym.sym == SDLK_LEFT) {//move between characters
                     if(position != 185) {
-                        position -= 100;
+                        position -= 200;
                     }
                 }
                 if(event.key.keysym.sym == SDLK_UP) {
@@ -438,10 +437,14 @@ int main(int argc, char **argv)
                     bool been_here = false;
                     int temp = 0;
                     fp = fopen(filename, "r");
-                    fp2 = fopen("content/replica.c", "w");
+                    fp2 = fopen("replica.c", "w");
                     if (fp == NULL) {
-                        printf("Could not open file %s",filename);
-                    }
+                        printf("Could not open file %s\n",filename);
+                        return 1;
+                    }else if(fp2 == NULL){
+                        printf("Could not open file 2\n");
+                        return 1;
+                    }else{
                     while (fgets(str, MAXCHAR, fp) != NULL) {
                         array4 = strtok(str, delim2);
                         while (array4 != NULL) {
@@ -476,7 +479,8 @@ int main(int argc, char **argv)
                     fclose(fp2);
                     fclose(fp);
                     remove(filename);
-                    rename("content/replica.c", filename);
+                    rename("replica.c", filename);
+                }
                 }
                 
                 SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
