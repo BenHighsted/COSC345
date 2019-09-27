@@ -45,6 +45,14 @@ void destroyAndFree (SDL_Surface* surface, SDL_Texture* texture)
 
 int main(int argc, char **argv)
 {
+    
+     SDL_RWops* file = SDL_RWFromFile( "score.txt", "r+b" );
+    if( file == NULL )
+    {
+        printf("Warning: Unable to open file! SDL Error: %s\n", SDL_GetError());
+    }
+    
+    
     next_time = SDL_GetTicks() + TICK_INTERVAL;//determines how fast the program should run
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);//opens the SDL_Mixer audio stuff
     Mix_Music *music = NULL;
@@ -71,6 +79,8 @@ int main(int argc, char **argv)
         return false;
     }
     /** Variable Declarations **/
+    bool arr = true;
+    int arrowAnimation = 0;
     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250;
     int startx = 300, starty = 600, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
     int mode = 0, pos = 0, position = 185;
@@ -88,7 +98,7 @@ int main(int argc, char **argv)
     bool sprite1 = true, sprite2 = false, sprite3 = false;
     bool first_time = true, first_game_over = true, showHighScore = false;
     bool addGameOver = true, leaderboard = false, reading_first_time = true;
-    char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(100), *array4 = (char *) malloc(100);
+    char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(100);
     /** Rectangle Declarations **/
     SDL_Rect wall_rect = {-800, 0, 1000, 700};
     SDL_Rect wall_rect2 = wall_rect;
@@ -182,7 +192,7 @@ int main(int argc, char **argv)
     SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
     //Leaderboard textures and text stuff
     char delim[] = " ", delim2[] = "\n", *ptr = (char *) malloc(64), *username = "You";
-    char str[MAXCHAR], *filename = "score.txt";
+    char str[MAXCHAR], *filename = "content/score.txt";
     FILE *fp, *fp2;
     SDL_Surface *leaderboardTitleSurface = IMG_Load("content/leaderboardTitle.png");
     SDL_Texture *leaderboardTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderboardTitleSurface);
@@ -190,10 +200,10 @@ int main(int argc, char **argv)
     //instruction textures
     SDL_Surface *instructionSurface = IMG_Load("content/arrowkeys.png");
     SDL_Texture *instructionTexture = SDL_CreateTextureFromSurface(renderer, instructionSurface);
-    SDL_Rect instructionRect = {500, 300, 250, 200};
+    SDL_Rect instructionRect = {510, 300, 300, 200};
     SDL_Surface *instructionTextSurface = IMG_Load("content/keystomove.png");
     SDL_Texture *instructionTextTexture = SDL_CreateTextureFromSurface(renderer, instructionTextSurface);
-    SDL_Rect instructionTextRect = {300, 350, 200, 150};
+    SDL_Rect instructionTextRect = {230, 370, 300, 150};
     //main main menu screen stuff
     int option = 0;
     SDL_Rect mainMenuRect = {345, 340, 300, 260};
@@ -206,6 +216,8 @@ int main(int argc, char **argv)
     SDL_Texture *blueArrowTexture = SDL_CreateTextureFromSurface(renderer, blueArrowSurface);
     SDL_Surface *blueArrowSurface2 = IMG_Load("content/arrow2.png");
     SDL_Texture *blueArrowTexture2 = SDL_CreateTextureFromSurface(renderer, blueArrowSurface2);
+    
+    bool about = false;
     
     //setup complete, starts game loop
     while(running){
@@ -273,11 +285,39 @@ int main(int argc, char **argv)
                     arrow2.y = 535;
                     arrow2.x = 560;
                 }
+                
+                arrowAnimation++;
+                if(arr) {
+                    arrow.x -= 20;
+                    arrow2.x += 20;
+                }
+                if(arrowAnimation == 25){
+                    arrowAnimation = 0;
+                    if(arr) {
+                        arr = false;
+                    } else {
+                        arr = true;
+                    }
+                }
+                
                 SDL_RenderCopy(renderer, blueArrowTexture, NULL, &arrow);
                 SDL_RenderCopy(renderer, blueArrowTexture2, NULL, &arrow2);
                 
                 SDL_RenderPresent(renderer);//draws the menu
 
+            } else if (about) {
+                Title_rect.x = 150;
+                Title_rect.y = 2;
+                Title_rect.w = 700;
+                Title_rect.h = 300;
+                SDL_RenderClear(renderer);
+                SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
+                SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
+                SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
+                SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
+                //SDL_RenderCopy(renderer, aboutTexture, NULL, &aboutRect);
+                SDL_RenderPresent(renderer);//draws the menu
+            
             }else if (main_menu_screen == true) {//standard main menu screen
                 counterAdd = 45;
                 Title_rect.x = 150;
@@ -347,16 +387,23 @@ int main(int argc, char **argv)
             
             while(SDL_PollEvent(&event)) {
                 if(event.type == SDL_KEYDOWN){
-                if(event.key.keysym.sym == SDLK_SPACE){//start game
-                    if(main_menu_screen == true) {
-                        main_menu = false;
-                        first_loop = true;
-                    } else if(main_menu_test == true){
-                        if(option == 0){
-                            main_menu_test = false;
-                            main_menu_screen = true;
-                        }
-                    }
+                    if(event.key.keysym.sym == SDLK_SPACE){//start game
+                                           if(main_menu_test == true){
+                                               if(option == 0){
+                                                   main_menu_test = false;
+                                                   main_menu_screen = true;
+                                               } else if(option == 1) {
+                                                   main_menu = false;
+                                                   leaderboard = true;
+                                               } else if(option == 2) {
+                                                   about = true;
+                                                   main_menu_test = false;
+                                               } else if(option == 3) exit(0);
+                                           } else if (main_menu_screen){
+                                               main_menu = false;
+                                               first_loop = true;
+                                           }
+                    
                 }
                 if(event.key.keysym.sym == SDLK_RETURN) {//look at current character
                     main_menu_screen = false;
@@ -365,8 +412,14 @@ int main(int argc, char **argv)
                     }
                 }
                 if(event.key.keysym.sym == SDLK_BACKSPACE) {//return from current character
-                    character_description = false;
-                    main_menu_screen = true;
+                    if(character_description){
+                        character_description = false;
+                        main_menu_screen = true;
+                    } else if (main_menu_screen || about){
+                        main_menu_screen = false;
+                        main_menu_test = true;
+                        option = 0;
+                    }
                 }
                 if(event.key.keysym.sym == SDLK_RIGHT) {//move between characters
                     if(position != 585) {
@@ -437,7 +490,17 @@ int main(int argc, char **argv)
                     bool been_here = false;
                     int temp = 0;
                     fp = fopen(filename, "r");
-                    fp2 = fopen("replica.c", "w");
+                    fp2 = fopen("content/replica.c", "w");
+                    char *array4;
+                    
+                    array4 = (char *) malloc(10 * sizeof(char));
+                    
+                    if(!array4) {
+                        printf("Memory Allocation failed!\n");
+                        exit(1);
+                    } else {
+                        printf("Memory Allocation successful!\n");
+                    }
                     if (fp == NULL) {
                         printf("Could not open file %s\n",filename);
                         return 1;
@@ -479,7 +542,7 @@ int main(int argc, char **argv)
                     fclose(fp2);
                     fclose(fp);
                     remove(filename);
-                    rename("replica.c", filename);
+                    rename("content/replica.c", filename);
                 }
                 }
                 
@@ -568,6 +631,18 @@ int main(int argc, char **argv)
                     if (fp == NULL) {
                         printf("Could not open file %s",filename);
                     }
+                    
+                    char *array4;
+                    
+                    array4 = (char *) malloc(10 * sizeof(char));
+                    
+                    if(!array4) {
+                        printf("Memory Allocation failed!\n");
+                        exit(1);
+                    } else {
+                        printf("Memory Allocation successful!\n");
+                    }
+                    
                     while (fgets(str, MAXCHAR, fp) != NULL) {
                         SDL_Rect score_rect = {350, positionY, 300, 50};
                         array4 = strtok(str, delim2);
@@ -589,10 +664,16 @@ int main(int argc, char **argv)
                 }
                 while(SDL_PollEvent(&event)) {
                     if(event.key.keysym.sym == SDLK_BACKSPACE) {//start again
-                        game_over = true;
-                        leaderboard = false;
-                        main_menu = false;
-                        reading_first_time = true;
+                        if(main_menu_test == true){
+                            leaderboard = false;
+                            main_menu = true;
+                            reading_first_time = true;
+                        } else {
+                            game_over = true;
+                            leaderboard = false;
+                            main_menu = false;
+                            reading_first_time = true;
+                        }
                     }
                 }
             } else {//no menus currently running, start and run game
