@@ -481,84 +481,96 @@ int main(int argc, char **argv)
                 SDL_RenderClear(renderer);
                 
                 if(first_game_over) {
-                first_game_over = false;
-                bool been_here = false;
-                int temp = 0;
-                char *array4 = (char *) malloc(10 * sizeof(char));
-                
-                SDL_RWops* fp = SDL_RWFromFile("score.txt", "r" );
-                SDL_RWops* fp2 = SDL_RWFromFile("replica.txt", "w" );
-                
-                for (int i = 0; i < 1; ++i) {
-                    SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
-                    if(strncmp(&array4[i], "x", 1)) {
-                        break;
-                    }
-                }
+                    first_game_over = false;
+                    bool been_here = false;
+                    int temp = 0;
+                    char *array4 = (char *) malloc(10 * sizeof(char));
                     
-                char* newLine = strtok(array4, delim2);
-                       while (newLine != NULL) {
-                           if(strcmp(newLine, "x") == 0) {
-                               break;
-                           }
-                           char* next = strchr(newLine, ' ');
-                           int x = atoi(next);
-                           if(score < x) {
-                               char *newLine2 = (char *) malloc(10 * sizeof(char));
-                               strcpy(newLine2, newLine);
-                               if(temp == 5) {
-                                   strcat(newLine2, "\nx");
-                               } else {
-                                   strcat(newLine2, "\n");
-                               }
-                               SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
-                               free(newLine2);
-                               temp++;
-                           } else {
-                               if(been_here == false) {
-                                   char *newLine3 = (char *) malloc(10 * sizeof(char));
-                                   char *buffer = (char *) malloc(10 * sizeof(char));
-                                   strcpy(newLine3, username);
-                                   strcat(newLine3, " ");
-                                   sprintf(buffer, "%d", score);
-                                   strcat(newLine3, buffer);
-                                   if(temp == 5) {
-                                       strcat(newLine3, "\nx");
-                                   } else {
-                                       strcat(newLine3, "\n");
-                                   }
-                                   SDL_RWwrite(fp2, newLine3, strlen(newLine3), 1);
-                                   free(newLine3);
-                                   temp++;
-                                   if(temp != 5) {
-                                       char *newLine2 = (char *) malloc(10 * sizeof(char));
-                                       strcpy(newLine2, newLine);
-                                       strcat(newLine2, "\n");
-                                       SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
-                                       free(newLine2);
-                                       temp++;
-                                   }
-                                   been_here = true;
-                               } else {
-                                   if(temp != 5) {
-                                       char *newLine2 = (char *) malloc(10 * sizeof(char));
-                                       strcpy(newLine2, newLine);
-                                       strcat(newLine2, "\n");
-                                       SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
-                                       free(newLine2);
-                                       temp++;
-                                   }
-                               }
-                               showHighScore = true;
-                           }
-                           newLine = strtok(NULL, delim2);
-                       }
-                       free(array4);
-                       SDL_RWclose(fp);
-                       SDL_RWclose(fp2);
-                       remove("score.txt");
-                       rename("replica.txt", "score.txt");
-                   }
+                    SDL_RWops* fp = SDL_RWFromFile("content/score.txt", "r" );
+                    
+                    for (int i = 0; i < 1; ++i) {
+                        SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
+                        if(strncmp(&array4[i], "x", 1)) {
+                            break;
+                        }
+                    }
+                    SDL_RWclose(fp);
+                    
+                    SDL_RWops* fp2 = SDL_RWFromFile("content/score.txt", "w" );
+                    
+                    char* newLine = strtok(array4, delim2);
+                    while (newLine != NULL) {
+                        if(newLine[0] == 'x') {
+                            break;
+                        }
+                        char* next = strchr(newLine, ' ');
+                        int x = atoi(next);
+                        if(score < x) {
+                            char *newLine2 = (char *) malloc(10 * sizeof(char));
+                            strcpy(newLine2, newLine);
+                            if(temp == 5) {
+                                strcat(newLine2, "\nx");
+                            } else {
+                                strcat(newLine2, "\n");
+                            }
+                            SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                            free(newLine2);
+                            temp++;
+                        } else {
+                            if(been_here == false) {
+                                char *newLine3 = (char *) malloc(10 * sizeof(char));
+                                char *buffer = (char *) malloc(10 * sizeof(char));
+                                strcpy(newLine3, username);
+                                strcat(newLine3, " ");
+                                sprintf(buffer, "%d", score);
+                                strcat(newLine3, buffer);
+                                if(temp == 4 ) {
+                                    strcat(newLine3, "\nx");
+                                } else {
+                                    strcat(newLine3, "\n");
+                                }
+                                SDL_RWwrite(fp2, newLine3, strlen(newLine3), 1);
+                                free(newLine3);
+                                free(buffer);
+                                temp++;
+                                if(temp != 5) {
+                                    char *newLine2 = (char *) malloc(10 * sizeof(char));
+                                    strcpy(newLine2, newLine);
+                                    strcat(newLine2, "\n");
+                                    SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                                    free(newLine2);
+                                    temp++;
+                                    if(temp == 5) {
+                                        char *newLine4 = (char *) malloc(10 * sizeof(char));
+                                        strcpy(newLine4, "x");
+                                        SDL_RWwrite(fp2, newLine4, strlen(newLine4), 1);
+                                        free(newLine4);
+                                    }
+                                }
+                                been_here = true;
+                            } else {
+                                if(temp != 5) {
+                                    char *newLine2 = (char *) malloc(10 * sizeof(char));
+                                    strcpy(newLine2, newLine);
+                                    strcat(newLine2, "\n");
+                                    SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                                    free(newLine2);
+                                    temp++;
+                                    if(temp == 5) {
+                                        char *newLine4 = (char *) malloc(10 * sizeof(char));
+                                        strcpy(newLine4, "x");
+                                        SDL_RWwrite(fp2, newLine4, strlen(newLine4), 1);
+                                        free(newLine4);
+                                    }
+                                }
+                            }
+                            showHighScore = true;
+                        }
+                        newLine = strtok(NULL, delim2);
+                    }
+                    free(array4);
+                    SDL_RWclose(fp2);
+                }
                                
                    SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
                    SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
@@ -656,7 +668,7 @@ int main(int argc, char **argv)
                     char *array4;
                     array4 = (char *) malloc(10 * sizeof(char));
                     
-                    SDL_RWops* fp = SDL_RWFromFile("score.txt", "r" );
+                    SDL_RWops* fp = SDL_RWFromFile("content/score.txt", "r" );
                     
                     for (int i = 0; i < 1; ++i) {
                         SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
@@ -668,12 +680,12 @@ int main(int argc, char **argv)
                     char* newLine = strtok(array4, delim2);
                     
                     while (newLine != NULL) {
-                        if(strcmp(newLine, "x") == 0) {
+                        if(newLine[0] == 'x') {
                             break;
                         }
                         SDL_Rect score_rect = {350, positionY, 300, 50};
                         first_char = array4[0];
-                        if(first_char == 'Y') {
+                        if(first_char == 'Y' || first_char == 'B') {
                             score_rect.x = 400;
                             score_rect.w = 200;
                         }
@@ -690,6 +702,7 @@ int main(int argc, char **argv)
                     SDL_RenderPresent(renderer);
                     destroyAndFree(scoreListSurface, scoreListTexture);
                 }
+                
                 while(SDL_PollEvent(&event)) {
                     if(event.key.keysym.sym == SDLK_BACKSPACE) {//start again
                         if(main_menu_test == true){
