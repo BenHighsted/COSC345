@@ -3,8 +3,13 @@
  * COSC345 'Dungeon Fall' Assignment 2 2019
  * Ben Highsted, Matthew Neil, Jasmine Hindson
  *
- * Last Edited: Fri Aug 09 13:25:26 NZST 2019
+ * Last Edited: Fri Sep 27 16:02:43 NZST 2019
  *
+ */
+
+/**
+ https://www.freepik.com/free-vector/set-realistic-fire-flames_5199081.html
+ Resource used for the flames on the executable icon.
  */
 #include <stdio.h>//standard includes
 #include <stdlib.h>
@@ -45,14 +50,6 @@ void destroyAndFree (SDL_Surface* surface, SDL_Texture* texture)
 
 int main(int argc, char **argv)
 {
-    
-     SDL_RWops* file = SDL_RWFromFile( "score.txt", "r+b" );
-    if( file == NULL )
-    {
-        printf("Warning: Unable to open file! SDL Error: %s\n", SDL_GetError());
-    }
-    
-    
     next_time = SDL_GetTicks() + TICK_INTERVAL;//determines how fast the program should run
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);//opens the SDL_Mixer audio stuff
     Mix_Music *music = NULL;
@@ -192,8 +189,6 @@ int main(int argc, char **argv)
     SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
     //Leaderboard textures and text stuff
     char delim[] = " ", delim2[] = "\n", *ptr = (char *) malloc(64), *username = "You";
-    char str[MAXCHAR], *filename = "content/score.txt";
-    FILE *fp, *fp2;
     SDL_Surface *leaderboardTitleSurface = IMG_Load("content/leaderboardTitle.png");
     SDL_Texture *leaderboardTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderboardTitleSurface);
     SDL_Rect leaderboardTitleRect = {150, 20, 700, 150};
@@ -387,29 +382,28 @@ int main(int argc, char **argv)
             
             while(SDL_PollEvent(&event)) {
                 if(event.type == SDL_KEYDOWN){
-                    if(event.key.keysym.sym == SDLK_SPACE){//start game
-                                           if(main_menu_test == true){
-                                               if(option == 0){
-                                                   main_menu_test = false;
-                                                   main_menu_screen = true;
-                                               } else if(option == 1) {
-                                                   main_menu = false;
-                                                   leaderboard = true;
-                                               } else if(option == 2) {
-                                                   about = true;
-                                                   main_menu_test = false;
-                                               } else if(option == 3) exit(0);
-                                           } else if (main_menu_screen){
-                                               main_menu = false;
-                                               first_loop = true;
-                                           }
-                    
-                }
-                if(event.key.keysym.sym == SDLK_RETURN) {//look at current character
-                    main_menu_screen = false;
-                    if(main_menu_test == false){
-                        character_description = true;
+                    if(event.key.keysym.sym == SDLK_RETURN) {//look at current character
+                        main_menu_screen = false;
+                        if(main_menu_test == false){
+                            character_description = true;
+                        }
                     }
+                    if(event.key.keysym.sym == SDLK_SPACE || event.key.keysym.sym == SDLK_RETURN){//start game
+                       if(main_menu_test == true){
+                           if(option == 0){
+                               main_menu_test = false;
+                               main_menu_screen = true;
+                           } else if(option == 1) {
+                               main_menu = false;
+                               leaderboard = true;
+                           } else if(option == 2) {
+                               about = true;
+                               main_menu_test = false;
+                           } else if(option == 3) exit(0);
+                       } else if (main_menu_screen){
+                           main_menu = false;
+                           first_loop = true;
+                       }
                 }
                 if(event.key.keysym.sym == SDLK_BACKSPACE) {//return from current character
                     if(character_description){
@@ -417,6 +411,7 @@ int main(int argc, char **argv)
                         main_menu_screen = true;
                     } else if (main_menu_screen || about){
                         main_menu_screen = false;
+                        about = false;
                         main_menu_test = true;
                         option = 0;
                     }
@@ -486,83 +481,114 @@ int main(int argc, char **argv)
                 SDL_RenderClear(renderer);
                 
                 if(first_game_over) {
-                    first_game_over = false; 
-                    bool been_here = false;
-                    int temp = 0;
-                    fp = fopen(filename, "r");
-                    fp2 = fopen("content/replica.c", "w");
-                    char *array4;
-                    
-                    array4 = (char *) malloc(10 * sizeof(char));
-                    
-                    if(!array4) {
-                        printf("Memory Allocation failed!\n");
-                        exit(1);
-                    } else {
-                        printf("Memory Allocation successful!\n");
-                    }
-                    if (fp == NULL) {
-                        printf("Could not open file %s\n",filename);
-                        return 1;
-                    }else if(fp2 == NULL){
-                        printf("Could not open file 2\n");
-                        return 1;
-                    }else{
-                    while (fgets(str, MAXCHAR, fp) != NULL) {
-                        array4 = strtok(str, delim2);
-                        while (array4 != NULL) {
-                            ptr = strtok(array4, delim);
-                            if(ptr != NULL) {
-                                ptr = strtok(NULL, delim);
-                                int x = atoi(ptr);
-                                if(score < x) {
-                                    fprintf(fp2, "%s %s\n", array4, ptr);
-                                    temp++;
-                                } else {
-                                    if(been_here == false) {
-                                        fprintf(fp2, "%s %d\n", username, currentScore);
-                                        temp++;
-                                        if(temp != 5) {
-                                            fprintf(fp2, "%s %s\n", array4, ptr);
-                                            temp++;
-                                        }
-                                        been_here = true;
-                                    } else {
-                                        if(temp != 5) {
-                                            fprintf(fp2, "%s %s\n", array4, ptr);
-                                            temp++;
-                                        }
-                                    }
-                                    showHighScore = true;
-                                }
-                            }
-                            array4 = strtok(NULL, delim2);
-                        }
-                    }
-                    fclose(fp2);
-                    fclose(fp);
-                    remove(filename);
-                    rename("content/replica.c", filename);
-                }
-                }
+                first_game_over = false;
+                bool been_here = false;
+                int temp = 0;
+                char *array4 = (char *) malloc(10 * sizeof(char));
                 
-                SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
-                SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
-                SDL_Texture* attemptCountTexture = SDL_CreateTextureFromSurface(renderer, attemptCountSurface);
-                SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, array, textColor);
-                SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
-                SDL_Surface* highScoreSurface = TTF_RenderText_Solid(font, array3, textColor);
-                SDL_Texture* highScoreTexture = SDL_CreateTextureFromSurface(renderer, highScoreSurface);
-                SDL_RenderCopy(renderer, leaderTitleTexture, NULL, &leaderTitleRect);
-                SDL_RenderCopy(renderer, gameOverTitleTexture, NULL, &gameOverTitleRect);
-                SDL_RenderCopy(renderer, menuTitleTexture, NULL, &menuTitleRect);
-                SDL_RenderCopy(renderer, tryAgainTitleTexture, NULL, &tryAgainTitleRect);
-                SDL_RenderCopy(renderer, attemptMessageTexture, NULL, &attemptMessageRect);
-                SDL_RenderCopy(renderer, scoreMessageTexture, NULL, &scoreMessageRect);
-                SDL_RenderCopy(renderer, highScoreMessageTexture, NULL, &highScoreMessageRect);
-                SDL_RenderCopy(renderer, highScoreTexture, NULL, &highscoreRect);
-                SDL_RenderCopy(renderer, attemptCountTexture, NULL, &attemptsRect);
-                SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
+                SDL_RWops* fp = SDL_RWFromFile("score.txt", "r" );
+                SDL_RWops* fp2 = SDL_RWFromFile("replica.txt", "w" );
+                
+                for (int i = 0; i < 1; ++i) {
+                    SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
+                    if(strncmp(&array4[i], "x", 1)) {
+                        break;
+                    }
+                }
+                    
+                char* newLine = strtok(array4, delim2);
+                       while (newLine != NULL) {
+                           if(strcmp(newLine, "x") == 0) {
+                               break;
+                           }
+                           char* next = strchr(newLine, ' ');
+                           int x = atoi(next);
+                           if(score < x) {
+                               char *newLine2 = (char *) malloc(10 * sizeof(char));
+                               strcpy(newLine2, newLine);
+                               if(temp == 5) {
+                                   strcat(newLine2, "\nx");
+                               } else {
+                                   strcat(newLine2, "\n");
+                               }
+                               SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                               free(newLine2);
+                               temp++;
+                           } else {
+                               if(been_here == false) {
+                                   char *newLine3 = (char *) malloc(10 * sizeof(char));
+                                   char *buffer = (char *) malloc(10 * sizeof(char));
+                                   strcpy(newLine3, username);
+                                   strcat(newLine3, " ");
+                                   sprintf(buffer, "%d", score);
+                                   strcat(newLine3, buffer);
+                                   if(temp == 5) {
+                                       strcat(newLine3, "\nx");
+                                   } else {
+                                       strcat(newLine3, "\n");
+                                   }
+                                   SDL_RWwrite(fp2, newLine3, strlen(newLine3), 1);
+                                   free(newLine3);
+                                   temp++;
+                                   if(temp != 5) {
+                                       char *newLine2 = (char *) malloc(10 * sizeof(char));
+                                       strcpy(newLine2, newLine);
+                                       strcat(newLine2, "\n");
+                                       SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                                       free(newLine2);
+                                       temp++;
+                                   }
+                                   been_here = true;
+                               } else {
+                                   if(temp != 5) {
+                                       char *newLine2 = (char *) malloc(10 * sizeof(char));
+                                       strcpy(newLine2, newLine);
+                                       strcat(newLine2, "\n");
+                                       SDL_RWwrite(fp2, newLine2, strlen(newLine2), 1);
+                                       free(newLine2);
+                                       temp++;
+                                   }
+                               }
+                               showHighScore = true;
+                           }
+                           newLine = strtok(NULL, delim2);
+                       }
+                       free(array4);
+                       SDL_RWclose(fp);
+                       SDL_RWclose(fp2);
+                       remove("score.txt");
+                       rename("replica.txt", "score.txt");
+                   }
+                               
+                   SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back2);
+                   SDL_Surface* attemptCountSurface = TTF_RenderText_Solid(font, array2, textColor);
+                   SDL_Texture* attemptCountTexture = SDL_CreateTextureFromSurface(renderer, attemptCountSurface);
+                   SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, array, textColor);
+                   SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
+                   SDL_Surface* highScoreSurface = TTF_RenderText_Solid(font, array3, textColor);
+                   SDL_Texture* highScoreTexture = SDL_CreateTextureFromSurface(renderer, highScoreSurface);
+                   SDL_RenderCopy(renderer, leaderTitleTexture, NULL, &leaderTitleRect);
+                   SDL_RenderCopy(renderer, gameOverTitleTexture, NULL, &gameOverTitleRect);
+                   SDL_RenderCopy(renderer, menuTitleTexture, NULL, &menuTitleRect);
+                   SDL_RenderCopy(renderer, tryAgainTitleTexture, NULL, &tryAgainTitleRect);
+                   SDL_RenderCopy(renderer, attemptMessageTexture, NULL, &attemptMessageRect);
+                   SDL_RenderCopy(renderer, scoreMessageTexture, NULL, &scoreMessageRect);
+                   SDL_RenderCopy(renderer, highScoreMessageTexture, NULL, &highScoreMessageRect);
+                   SDL_RenderCopy(renderer, highScoreTexture, NULL, &highscoreRect);
+                   SDL_RenderCopy(renderer, attemptCountTexture, NULL, &attemptsRect);
+                   SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
+                   if(showHighScore == true) {
+                       if(count < 100) {
+                           SDL_RenderCopy(renderer, newHighscoreTexture, NULL, &gFlashClips);
+                           count+=2;
+                       } else {
+                           count2-= 2;
+                           if(count2 == 0){
+                               count = 0;
+                               count2 = 100;
+                           }
+                       }
+                   }
                 if(showHighScore == true) {
                     if(count < 100) {
                         SDL_RenderCopy(renderer, newHighscoreTexture, NULL, &gFlashClips);
@@ -627,36 +653,38 @@ int main(int argc, char **argv)
                     SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
                     SDL_RenderCopy(renderer, leaderboardTitleTexture, NULL, &leaderboardTitleRect);
                     
-                    fp = fopen(filename, "r");
-                    if (fp == NULL) {
-                        printf("Could not open file %s",filename);
-                    }
-                    
                     char *array4;
-                    
                     array4 = (char *) malloc(10 * sizeof(char));
                     
-                    if(!array4) {
-                        printf("Memory Allocation failed!\n");
-                        exit(1);
-                    } else {
-                        printf("Memory Allocation successful!\n");
+                    SDL_RWops* fp = SDL_RWFromFile("score.txt", "r" );
+                    
+                    for (int i = 0; i < 1; ++i) {
+                        SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
+                        if(strncmp(&array4[i], "x", 1)) {
+                            break;
+                        }
                     }
                     
-                    while (fgets(str, MAXCHAR, fp) != NULL) {
+                    char* newLine = strtok(array4, delim2);
+                    
+                    while (newLine != NULL) {
+                        if(strcmp(newLine, "x") == 0) {
+                            break;
+                        }
                         SDL_Rect score_rect = {350, positionY, 300, 50};
-                        array4 = strtok(str, delim2);
                         first_char = array4[0];
                         if(first_char == 'Y') {
                             score_rect.x = 400;
                             score_rect.w = 200;
                         }
-                        scoreListSurface = TTF_RenderText_Solid(font, array4, textColor);
+                        scoreListSurface = TTF_RenderText_Solid(font, newLine, textColor);
                         scoreListTexture = SDL_CreateTextureFromSurface(renderer, scoreListSurface);
                         SDL_RenderCopy(renderer, scoreListTexture, NULL, &score_rect);
                         positionY += 75;
+                        newLine = strtok(NULL, delim2);
                     }
-                    fclose(fp);
+                    SDL_RWclose(fp);
+                    
                     SDL_Rect infoRect2 = {345, 580, 320, 50};
                     SDL_RenderCopy(renderer, pressBackspaceTexture, NULL, &infoRect2);
                     SDL_RenderPresent(renderer);
