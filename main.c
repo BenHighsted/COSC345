@@ -1,9 +1,8 @@
- /**COSC345 'Dungeon Fall' Assignment 2 2019
+ /** COSC345 'Dungeon Fall' Assignment 2 2019
   * Ben Highsted, Matthew Neil, Jasmine Hindson
-  * Last Edited: Fri Sep 27 16:02:43 NZST 2019 */
-
-/* https://www.freepik.com/free-vector/set-realistic-fire-flames_5199081.html
- * Resource used for the flames on the executable icon */
+  * Last Edited: Mon Sep 30 13:21:03 NZDT 2019 */
+ /** https://www.freepik.com/free-vector/set-realistic-fire-flames_5199081.html
+  * Resource used for the flames on the executable icon */
  #include <stdio.h>//standard includes
  #include <stdlib.h>
  #include <stdbool.h>
@@ -51,30 +50,22 @@
      TTF_Font *font = NULL, *font2 = NULL;//creates font variables and assigns them to fonts out of /Library/Fonts.
      font = TTF_OpenFont("/Library/Fonts/Georgia.ttf", 100);//Only works for MACOS currently.
      font2 = TTF_OpenFont("/Library/Fonts/Arial.ttf", 100);
-     /** Variable Declarations **/
-     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250, option = 0, arrowAnimation = 0;;
+     int score = 00000001, attempts = 0, counterAdd = 5, x = 475, y = 250, option = 0, arrowAnimation = 0;/** Variable Declarations **/
      int startx = 300, starty = 600, fallx = 300, fally = -100, wallLeftX = -800, wallRightX = 800;
-     int mode = 0, pos = 0, position = 185;
-     int startyGameOver = 560, currentScore = 0;
-     int speed = 4, oby = -100, ob2y = 10000000;
+     int mode = 0, pos = 0, position = 185, startyGameOver = 560, currentScore = 0, speed = 4, oby = -100, ob2y = 10000000;
      float menuCounter = 0, fallCounter = 0, backCounter = 0, backCounter2 = 0, menuCounterGameOver = 0;
-     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0;
-     float count = 0, count2 = 100;
-     float fireObjectsX[] = {(rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200, (rand() % 480)+200};
-     bool add = true, fall = false, first_loop = false, running = true;
-     bool setup = true, switchModes = false, arr = true;;
+     float counter = 0.0, counter2 = 0.0, counter3 = 0.0, counter4 = 0.0, count = 0, count2 = 100;
+     float fireObjectsX[] = {0, 0, 0, 0, 0, 0};
+     bool add = true, fall = false, first_loop = false, running = true, setup = true, switchModes = false, arr = true;
      bool move_left = false, move_right = false, move_up = false, move_down = false;
-     bool main_menu = true, game_over = false, rightmove = false;
-     bool character_description = false, main_menu_screen = false;
-     bool sprite1 = true, sprite2 = false, sprite3 = false;
-     bool first_time = true, first_game_over = true, showHighScore = false;
+     bool main_menu = true, game_over = false, rightmove = false, character_description = false, main_menu_screen = false;
+     bool sprite1 = true, sprite2 = false, sprite3 = false, first_time = true, first_game_over = true, showHighScore = false;
      bool addGameOver = true, leaderboard = false, reading_first_time = true;
      char *array = (char *) malloc(64), *array2 = (char *) malloc(64), *array3 = (char *) malloc(100);
      /** Rectangle Declarations **/
      SDL_Rect wall_rect = {-800, 0, 1000, 700}, wall_rect2 = {800, 0, 1000, 700};
      SDL_Rect wall_rect1_2 = {-800, 700, 1000, 700}, wall_rect2_2 = {800, 700, 1000, 700};
-     SDL_Rect Message_rect = {505, 5, 35, 20}, Message_rect2 = {450, 0, 50, 30};
-     SDL_Rect Title_rect = {150, 50, 700, 300};
+     SDL_Rect Message_rect = {505, 5, 35, 20}, Message_rect2 = {450, 0, 50, 30}, Title_rect = {150, 50, 700, 300};
      SDL_Rect Title_background_rect = {0, 0, 1000, 710}, Title_background_rect2 = {0, 700, 1000, 710};
      SDL_Rect background_rect = {0, 0, 1000, 710}, background_rect2 = {0, 710, 1000, 710};
      SDL_Rect sprite1_rect = {200, 370, 130, 130}, sprite_rect2 = {375, 50, 220, 220};
@@ -86,13 +77,10 @@
      SDL_Rect gameOverTitleRect = {130, -60, 750, 600}, attemptMessageRect = {280, 130, 400, 300};
      SDL_Rect scoreMessageRect = {280, 190, 400, 300}, highScoreMessageRect = {260, 250, 400, 300};
      SDL_Rect game_over_back2 = {0, 0, 1000, 700}, attemptsRect = {590, 165, 25, 50};
-     SDL_Rect highscoreRect = {560, 300, 50, 30}, scoreRect = {530, 240, 50, 30};
-     SDL_Rect MainMenu_rect = {startx, starty, 400, 50}, mainMenuRect = {345, 340, 300, 260};
-     SDL_Rect falling_rect = {fallx, fally, 100, 100}, border_rect = {position, 355, 160, 160};
-     SDL_Rect pick_rect = {190, 290, 300, 40}, enter_rect = {position + 6, 520, 150, 20};
+     SDL_Rect highscoreRect = {560, 300, 50, 30}, scoreRect = {530, 240, 50, 30}, mainMenuRect = {345, 340, 300, 260};
      SDL_Rect arrow = {200, 600, 50, 50}, arrow2 = {600, 600, 50, 50};
      SDL_Rect description_image = {5, 250, 990, 250}, leaderboardTitleRect = {150, 20, 700, 150};
-     SDL_Rect instructionRect = {510, 300, 300, 200}, instructionTextRect = {230, 370, 300, 150};
+     SDL_Rect instructionRect = {510, 300, 300, 200}, instructionTextRect = {230, 370, 300, 150}, aboutRect = {0, 0, 1000, 700};
      SDL_Event event;//starts SDL event
      SDL_Color textColor = {255, 255, 255}; //Text color white
      //Background and wall textures
@@ -100,9 +88,8 @@
      SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
      SDL_Surface *background = IMG_Load("content/bricksBackground.png");//From: http://pixelartmaker.com/art/31b17490e7ef5d8
      SDL_Texture *backTexture = SDL_CreateTextureFromSurface(renderer, background);
-     //Border and Sprite textures
      SDL_Surface *borderSurface = IMG_Load("content/border.png");//Following images created by Jasmine Hindson
-     SDL_Texture *border = SDL_CreateTextureFromSurface(renderer, borderSurface);
+     SDL_Texture *border = SDL_CreateTextureFromSurface(renderer, borderSurface);//Border and Sprite textures
      SDL_Surface *spriteStraightTexture = IMG_Load("content/sprite1straight.png");
      SDL_Texture *sprite1StraightTexture = SDL_CreateTextureFromSurface(renderer, spriteStraightTexture);
      SDL_Surface *sprite2Straight = IMG_Load("content/sprite2straight.png");
@@ -115,15 +102,13 @@
      SDL_Texture *sprite2FallingTexture = SDL_CreateTextureFromSurface(renderer, sprite2Falling);
      SDL_Surface *sprite3Falling = IMG_Load("content/sprite3falling.png");
      SDL_Texture *sprite3FallingTexture = SDL_CreateTextureFromSurface(renderer, sprite3Falling);
-     //Fireball/Object textures
      SDL_Surface *fireRed = IMG_Load("content/fire-red.png");//Following images from https://stealthix.itch.io/animated-fires
-     SDL_Texture *fireRedTexture = SDL_CreateTextureFromSurface(renderer, fireRed);
+     SDL_Texture *fireRedTexture = SDL_CreateTextureFromSurface(renderer, fireRed);//Fireball/Object textures
      SDL_Surface *fireBlue = IMG_Load("content/fire-blue.png");
      SDL_Texture *fireBlueTexture = SDL_CreateTextureFromSurface(renderer, fireBlue);
      SDL_Surface *fireGreen = IMG_Load("content/fire-green.png");
      SDL_Texture *fireGreenTexture = SDL_CreateTextureFromSurface(renderer, fireGreen);
-     //Character Descriptions textures
-     SDL_Surface *surfaceMessage, *surfaceMessage2;
+     SDL_Surface *surfaceMessage, *surfaceMessage2;//Character Descriptions textures
      SDL_Texture *Message, *Message2;
      SDL_Surface *image1_description = IMG_Load("content/andrew-description.png");
      SDL_Texture *description_texture1 = SDL_CreateTextureFromSurface(renderer, image1_description);
@@ -131,8 +116,7 @@
      SDL_Texture *description_texture2 = SDL_CreateTextureFromSurface(renderer, image2_description);
      SDL_Surface *image3_description = IMG_Load("content/matthew-description.png");
      SDL_Texture *description_texture3 = SDL_CreateTextureFromSurface(renderer, image3_description);
-     //Game over screen textures
-     SDL_Surface *leaderTitleSurface = IMG_Load("content/titleLeaderboard.png");
+     SDL_Surface *leaderTitleSurface = IMG_Load("content/titleLeaderboard.png");//Game over screen textures
      SDL_Surface *gameOverTitleSurface = IMG_Load("content/titleGameOver.png");
      SDL_Surface *menuTitleSurface = IMG_Load("content/titleMenu.png");
      SDL_Surface *tryAgainTitleSurface = IMG_Load("content/titleTryAgain.png");
@@ -147,8 +131,7 @@
      SDL_Texture *attemptMessageTexture = SDL_CreateTextureFromSurface(renderer, attemptMessageSurface);
      SDL_Texture *scoreMessageTexture = SDL_CreateTextureFromSurface(renderer, scoreMessageSurface);
      SDL_Texture *highScoreMessageTexture = SDL_CreateTextureFromSurface(renderer, highScoreMessageSurface);
-     SDL_Texture *newHighscoreTexture = SDL_CreateTextureFromSurface(renderer, newHighscoreSurface);
-     //Main Menu screen textures
+     SDL_Texture *newHighscoreTexture = SDL_CreateTextureFromSurface(renderer, newHighscoreSurface);//Main Menu screen textures
      SDL_Surface *mainMenuTitleSurface = IMG_Load("content/menuTitle.png");
      SDL_Texture *mainMenuTitleTexture = SDL_CreateTextureFromSurface(renderer, mainMenuTitleSurface);
      SDL_Surface *mainMenuStartSurface = IMG_Load("content/menuStart.png");
@@ -159,17 +142,14 @@
      SDL_Texture *pressEnterTexture = SDL_CreateTextureFromSurface(renderer, pressEnter);
      SDL_Surface *selectCharacter = IMG_Load("content/selectCharacter.png");
      SDL_Texture *selectCharacterTexture = SDL_CreateTextureFromSurface(renderer, selectCharacter);
-     //Leaderboard textures and text stuff
-     char delim[] = " ", delim2[] = "\n", *ptr = (char *) malloc(64), *username = "You";
+     char delim2[] = "\n", *username = "You"; //Leaderboard textures and text stuff
      SDL_Surface *leaderboardTitleSurface = IMG_Load("content/leaderboardTitle.png");
      SDL_Texture *leaderboardTitleTexture = SDL_CreateTextureFromSurface(renderer, leaderboardTitleSurface);
-     //instruction textures
-     SDL_Surface *instructionSurface = IMG_Load("content/arrowkeys.png");
+     SDL_Surface *instructionSurface = IMG_Load("content/arrowkeys.png");//instruction textures
      SDL_Texture *instructionTexture = SDL_CreateTextureFromSurface(renderer, instructionSurface);
      SDL_Surface *instructionTextSurface = IMG_Load("content/keystomove.png");
      SDL_Texture *instructionTextTexture = SDL_CreateTextureFromSurface(renderer, instructionTextSurface);
-     //main main menu screen stuff
-     bool main_menu_test = true, about = false;
+     bool main_menu_test = true, about = false;//main main menu screen stuff
      SDL_Surface *mainMenuOptionsSurface = IMG_Load("content/mainMenu.png");
      SDL_Texture *mainMenuOptionsTexture = SDL_CreateTextureFromSurface(renderer, mainMenuOptionsSurface);
      SDL_Surface *blueArrowSurface = IMG_Load("content/arrow.png");
@@ -178,14 +158,16 @@
      SDL_Texture *blueArrowTexture2 = SDL_CreateTextureFromSurface(renderer, blueArrowSurface2);
      SDL_Texture *sprite = NULL, *nameTexture = NULL;
      SDL_Surface *nameSurface = NULL;
+     SDL_Surface *aboutSurface = IMG_Load("content/about.png");
+     SDL_Texture *aboutTexture = SDL_CreateTextureFromSurface(renderer, aboutSurface);
      while(running){ //setup complete, starts game loop
          SDL_Delay(time_left());//used to run at the same speed on every device
          next_time += TICK_INTERVAL;
          if(event.type == SDL_QUIT) //if the user clicks the red X to quit
              running = false;//stop running
          if(main_menu){//if the game state is in the main menu
+            SDL_RenderClear(renderer);
              if(character_description) {//if the user presses enter on a character
-                 SDL_RenderClear(renderer);
                  SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copies all the textures into the renderer
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
@@ -209,7 +191,6 @@
                  Title_rect.y = 2;
                  Title_rect.w = 700;
                  Title_rect.h = 300;
-                 SDL_RenderClear(renderer);
                  SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
@@ -256,12 +237,10 @@
                  Title_rect.y = 2;
                  Title_rect.w = 700;
                  Title_rect.h = 300;
-                 SDL_RenderClear(renderer);
                  SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
-                 SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
-                 //SDL_RenderCopy(renderer, aboutTexture, NULL, &aboutRect);
+                 SDL_RenderCopy(renderer, aboutTexture, NULL, &aboutRect);
                  SDL_RenderPresent(renderer);//draws the menu
              }else if (main_menu_screen) {//standard main menu screen
                  counterAdd = 45;
@@ -281,7 +260,7 @@
                      add = false;
                  else if(starty == 575)
                      add = true;
-                 SDL_RenderClear(renderer);
+                 SDL_Rect falling_rect = {fallx, fally, 100, 100}, border_rect = {position, 355, 160, 160};
                  SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
@@ -291,6 +270,8 @@
                  SDL_RenderCopy(renderer, sprite3StraightTexture, NULL, &sprite3_rect);
                  SDL_RenderCopy(renderer, border, NULL, &border_rect);
                  SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
+                 SDL_Rect pick_rect = {190, 290, 300, 40}, enter_rect = {position + 6, 520, 150, 20};
+                 SDL_Rect MainMenu_rect = {startx, starty, 400, 50};
                  if(add){//animates the 'start' text
                      if(menuCounter == 4) {
                          starty += 1;
@@ -409,9 +390,7 @@
                      bool been_here = false;
                      int temp = 0;
                      char *array4 = (char *) malloc(10 * sizeof(char));
-
                      SDL_RWops* fp = SDL_RWFromFile("content/score.txt", "r" );
-
                      for (int i = 0; i < 1; ++i) {
                          SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
                          if(strncmp(&array4[i], "x", 1)) {
@@ -583,21 +562,16 @@
                      int positionY = 200;
                      SDL_RenderCopy(renderer, backTexture, NULL, &game_over_back3);
                      SDL_RenderCopy(renderer, leaderboardTitleTexture, NULL, &leaderboardTitleRect);
-
                      char *array4;
                      array4 = (char *) malloc(10 * sizeof(char));
-
                      SDL_RWops* fp = SDL_RWFromFile("content/score.txt", "r" );
-
                      for (int i = 0; i < 1; ++i) {
                          SDL_RWread(fp, &array4[i], sizeof(Sint64)*2, 5);
                          if(strncmp(&array4[i], "x", 1)) {
                              break;
                          }
                      }
-
                      char* newLine = strtok(array4, delim2);
-
                      while (newLine != NULL) {
                          if(newLine[0] == 'x') {
                              break;
@@ -956,8 +930,8 @@
                              wall_rect2.x = wallRightX;
                              wall_rect1_2.x = wallLeftX;
                              wall_rect2_2.x = wallRightX;
-                             float wallPos[] = {100, 300, 500, 700}; //now that stage has begun, walls will randomly generate a position and move to that position
-                             if(wallLeftX < wallPos[pos] - 1000) {
+                             float wallPos[] = {100, 300, 500, 700}; //now that stage has begun, walls
+                             if(wallLeftX < wallPos[pos] - 1000) {//will randomly generate a position and move to that position
                                  wallLeftX += speed2;
                                  wallRightX += speed2;
                                  if(wallLeftX >= wallPos[pos] - 1000)
