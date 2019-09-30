@@ -83,9 +83,8 @@
      SDL_Rect instructionRect = {510, 300, 300, 200}, instructionTextRect = {230, 370, 300, 150}, aboutRect = {0, 0, 1000, 700};
      SDL_Event event;//starts SDL event
      SDL_Color textColor = {255, 255, 255}; //Text color white
-     //Background and wall textures
      SDL_Surface *image = IMG_Load("content/bricks.png");//From: https://www.deviantart.com/skazdal/art/Rock-bricks-texture-670434391
-     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
+     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);//Background and wall textures
      SDL_Surface *background = IMG_Load("content/bricksBackground.png");//From: http://pixelartmaker.com/art/31b17490e7ef5d8
      SDL_Texture *backTexture = SDL_CreateTextureFromSurface(renderer, background);
      SDL_Surface *borderSurface = IMG_Load("content/border.png");//Following images created by Jasmine Hindson
@@ -149,7 +148,7 @@
      SDL_Texture *instructionTexture = SDL_CreateTextureFromSurface(renderer, instructionSurface);
      SDL_Surface *instructionTextSurface = IMG_Load("content/keystomove.png");
      SDL_Texture *instructionTextTexture = SDL_CreateTextureFromSurface(renderer, instructionTextSurface);
-     bool main_menu_test = true, about = false;//main main menu screen stuff
+     bool start_menu = true, about = false;//main main menu screen stuff
      SDL_Surface *mainMenuOptionsSurface = IMG_Load("content/mainMenu.png");
      SDL_Texture *mainMenuOptionsTexture = SDL_CreateTextureFromSurface(renderer, mainMenuOptionsSurface);
      SDL_Surface *blueArrowSurface = IMG_Load("content/arrow.png");
@@ -186,36 +185,36 @@
                  SDL_RenderCopy(renderer, sprite, NULL, &sprite_rect2);
                  SDL_RenderPresent(renderer);
                  destroyAndFree(nameSurface, nameTexture);
-             } else if (main_menu_test){
-                 Title_rect.x = 150;
+             } else if (start_menu){//the menu when you first start the game
+                 Title_rect.x = 150;//reset the title rect
                  Title_rect.y = 2;
                  Title_rect.w = 700;
                  Title_rect.h = 300;
-                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);//copys created stuff to the renderer
+                 SDL_RenderCopy(renderer, backTexture, NULL, &background_rect2);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect);
                  SDL_RenderCopy(renderer, backTexture, NULL, &Title_background_rect2);
                  SDL_RenderCopy(renderer, mainMenuOptionsTexture, NULL, &mainMenuRect);
                  SDL_RenderCopy(renderer, mainMenuTitleTexture, NULL, &Title_rect);
-                 if(option == 0){
+                 if(option == 0){//the 'play game' option
                      arrow.x = 310;
-                     arrow.y = 350;
+                     arrow.y = 355;
                      arrow2.x = 630;
-                     arrow2.y = 350;
-                 } else if(option == 1) {
+                     arrow2.y = 355;
+                 } else if(option == 1) {//the 'high score' option
                      arrow.x = 310;
-                     arrow.y = 410;
+                     arrow.y = 415;
                      arrow2.x = 630;
-                     arrow2.y = 410;
-                 } else if(option == 2) {
+                     arrow2.y = 415;
+                 } else if(option == 2) {//the 'about' option
                      arrow.x = 370;
-                     arrow.y = 480;
+                     arrow.y = 485;
                      arrow2.x = 570;
-                     arrow2.y = 480;
-                 } else if(option == 3) {
+                     arrow2.y = 485;
+                 } else if(option == 3) {//the 'exit' option
                      arrow.x = 380;
-                     arrow.y = 535;
+                     arrow.y = 540;
                      arrow2.x = 560;
-                     arrow2.y = 535;
+                     arrow2.y = 540;
                  }
                  arrowAnimation++;
                  if(arr) {
@@ -303,24 +302,24 @@
                  SDL_RenderCopy(renderer, pressEnterTexture, NULL, &enter_rect);
                  SDL_RenderPresent(renderer);//draws the menu
              }
-             while(SDL_PollEvent(&event)) {
+             while(SDL_PollEvent(&event) != 0) {
                  if(event.type == SDL_KEYDOWN){
                      if(event.key.keysym.sym == SDLK_RETURN) {//look at current character
                          main_menu_screen = false;
-                         if(main_menu_test == false)
+                         if(start_menu == false)
                              character_description = true;
                      }
                      if(event.key.keysym.sym == SDLK_SPACE || event.key.keysym.sym == SDLK_RETURN){//start game
-                        if(main_menu_test == true){
+                        if(start_menu == true){
                             if(option == 0){
-                                main_menu_test = false;
+                                start_menu = false;
                                 main_menu_screen = true;
                             } else if(option == 1) {
                                 main_menu = false;
                                 leaderboard = true;
                             } else if(option == 2) {
                                 about = true;
-                                main_menu_test = false;
+                                start_menu = false;
                             } else if(option == 3)
                                 exit(0);
                         } else if (main_menu_screen){
@@ -335,7 +334,7 @@
                          } else if (main_menu_screen || about){
                              main_menu_screen = false;
                              about = false;
-                             main_menu_test = true;
+                             start_menu = true;
                              option = 0;
                          }
                      }
@@ -406,10 +405,10 @@
                          }
                          char* next = strchr(newLine, ' ');
                          int x = atoi(next);
-                         if(score < x) {
+                         if(score <= x) {
                              char *newLine2 = (char *) malloc(10 * sizeof(char));
                              strcpy(newLine2, newLine);
-                             if(temp == 5) {
+                             if(temp == 4) {
                                  strcat(newLine2, "\nx");
                              } else {
                                  strcat(newLine2, "\n");
@@ -425,7 +424,7 @@
                                  strcat(newLine3, " ");
                                  sprintf(buffer, "%d", score);
                                  strcat(newLine3, buffer);
-                                 if(temp == 4 ) {
+                                 if(temp == 4) {
                                      strcat(newLine3, "\nx");
                                  } else {
                                      strcat(newLine3, "\n");
@@ -517,7 +516,7 @@
                  destroyAndFree(highScoreSurface, highScoreTexture);
                  destroyAndFree(attemptCountSurface, attemptCountTexture);
                  destroyAndFree(scoreSurface, scoreTexture);
-                 while(SDL_PollEvent(&event)) {
+                 while(SDL_PollEvent(&event) != 0) {
                      if(event.key.keysym.sym == SDLK_SPACE) {//start again
                          game_over = false;
                          leaderboard = false;
@@ -527,7 +526,7 @@
                          game_over = false;
                          leaderboard = false;
                          main_menu = true;
-                         main_menu_test = true;
+                         start_menu = true;
                      }
                      if(event.key.keysym.sym == SDLK_l) {//goes to leaderboard
                          game_over = false;
@@ -594,9 +593,9 @@
                      SDL_RenderPresent(renderer);
                      destroyAndFree(scoreListSurface, scoreListTexture);
                  }
-                 while(SDL_PollEvent(&event)) {
+                 while(SDL_PollEvent(&event) != 0) {
                      if(event.key.keysym.sym == SDLK_BACKSPACE) {//start again
-                         if(main_menu_test == true){
+                         if(start_menu == true){
                              leaderboard = false;
                              main_menu = true;
                              reading_first_time = true;
@@ -703,7 +702,7 @@
                      }
                      SDL_RenderPresent(renderer);
                  }//animation ends here
-                 while(SDL_PollEvent(&event)){
+                 while(SDL_PollEvent(&event) != 0){
                      if(event.type == SDL_KEYUP) { //determines which way to move the character based on the key presses
                          if(event.key.keysym.sym == SDLK_RIGHT)
                              move_right = false;
